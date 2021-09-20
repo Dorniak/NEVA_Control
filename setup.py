@@ -1,7 +1,7 @@
 from glob import glob
 from setuptools import setup, find_packages
 
-package_name = 'ros2_control'
+package_name = 'NEVA_control'
 
 setup(
     name=package_name,
@@ -16,14 +16,14 @@ setup(
     ],
     install_requires=['setuptools', 'PyYAML', 'numpy'],
     zip_safe=True,
-    maintainer='Alfredo Valle',
-    maintainer_email='alfredo.valle@upm.es',
+    maintainer='',
+    maintainer_email='',
     description='TODO: Package description',
     license='TODO: License declaration',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'control = control.VAMTAC_Control:main',
+            'control = control.NEVA_Control:main',
         ],
     },
 )

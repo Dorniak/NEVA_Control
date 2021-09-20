@@ -78,24 +78,14 @@ class Control(Node):
                                      log_level=params['log_level'].value)
 
         # Subscriber vehicle request
-        self.create_subscription(msg_type=String, topic='/Vamtac/id',
-                                 callback=self.sub_id, qos_profile=HistoryPolicy.KEEP_LAST)
         self.create_subscription(msg_type=Float64, topic='/Vamtac/direccion',
                                  callback=self.sub_direccion, qos_profile=HistoryPolicy.KEEP_LAST)
         self.create_subscription(msg_type=Float64, topic='/Vamtac/velocidad',
                                  callback=self.sub_velocidad, qos_profile=HistoryPolicy.KEEP_LAST)
-        self.create_subscription(msg_type=String, topic='/Vamtac/marchas',
-                                 callback=self.sub_marchas, qos_profile=HistoryPolicy.KEEP_LAST)
-        self.create_subscription(msg_type=Bool, topic='/Vamtac/parada_emergencia',
-                                 callback=self.sub_parada_emg, qos_profile=HistoryPolicy.KEEP_LAST)
-        self.create_subscription(msg_type=Bool, topic='/Vamtac/override',
-                                 callback=self.sub_override, qos_profile=HistoryPolicy.KEEP_LAST)
         self.create_subscription(msg_type=Bool, topic='/Vamtac/b_velocidad',
                                  callback=self.sub_b_velocidad, qos_profile=HistoryPolicy.KEEP_LAST)
         self.create_subscription(msg_type=Bool, topic='/Vamtac/b_direccion',
                                  callback=self.sub_b_direccion, qos_profile=HistoryPolicy.KEEP_LAST)
-        self.create_subscription(msg_type=Bool, topic='/Vamtac/b_marchas',
-                                 callback=self.sub_b_marchas, qos_profile=HistoryPolicy.KEEP_LAST)
 
         # Configuring devices
         params = self.get_parameters_by_prefix('steering')
@@ -331,10 +321,10 @@ def main(args=None):
     rclpy.init(args=args)
     manager = None
     try:
-        manager = Control(name='VAMTAC_Control')
+        manager = Control(name='NEVA_Control')
         rclpy.spin(manager)
     except KeyboardInterrupt:
-        print('VAMTAC_Control: Keyboard interrupt')
+        print('Keyboard interrupt')
         manager.shutdown()
         manager.destroy_node()
     except Exception:

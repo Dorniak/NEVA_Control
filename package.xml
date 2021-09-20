@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>ros2_control</name>
+  <name>NEVA_control</name>
   <version>0.0.0</version>
-  <description>Nodo de control VAMTAC</description>
-  <maintainer email="alfredo.valle@upm.es">ros2</maintainer>
+  <description>Nodo de control NEVA</description>
+  <maintainer email="">ros2</maintainer>
   <license>TODO: License declaration</license>
 
   <exec_depend>rclpy</exec_depend>

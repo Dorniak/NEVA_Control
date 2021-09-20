@@ -1,5 +1,5 @@
 control:
-  VAMTAC_Control:
+  NEVA_Control:
     ros__parameters:
       id_platform: VAMTAC_INSIA
       log_level: 20
