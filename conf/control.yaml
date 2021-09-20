@@ -1,0 +1,54 @@
+control:
+  VAMTAC_Control:
+    ros__parameters:
+      id_platform: VAMTAC_INSIA
+      log_level: 20
+      test: False
+
+      CAN_1:
+        ip: 192.168.0.6
+        port: 10001
+        extend: True
+        log_level: 0
+
+      CAN_2:
+        ip: 192.168.0.8
+        port: 10001
+        extend: False
+        log_level: 0
+
+      DIO:
+        ip: 192.168.0.7
+        port: 4601
+        log_level: 0
+
+      AIO:
+        ip: 192.168.0.7
+        port: 4600
+        log_level: 0
+
+      steering:
+        on: True
+        cobid: 1
+        log_level: 0
+
+      throttle:
+        on: True
+        log_level: 0
+
+      brake:
+        on: True
+        cobid: 2
+        log_level: 0
+
+      gears:
+        on: True
+        log_level: 0
+
+      pid:
+        b_kp: 1
+        b_td: 0
+        b_ti: 5
+        t_kp: 1.3
+        t_td: 0
+        t_ti: 1
