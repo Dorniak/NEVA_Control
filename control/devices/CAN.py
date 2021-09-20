@@ -6,7 +6,6 @@ from rclpy.node import Node
 from rclpy.logging import get_logger
 
 from control.devices.base import VehicleState
-from mdef_a2sat.msg import ElemAlarmas
 from control.devices.connection import Connection
 
 
@@ -14,25 +13,9 @@ def deco_581(data, logger, node):
     value = (data[8] + (data[9] << 8) + (data[10] << 16) + (data[11] << 24))
     if ((value & 0x01) == 0x01) and (data[5] == 0x02) and (data[6] == 0x40):
         logger.debug('581: Dirección activa')
-        if not VehicleState.b_direccion:
-            node.pub_Alarma.publish(
-                ElemAlarmas(
-                    id_alarma=40,
-                    estado=False,
-                    t_alarma=int(time.time()),
-                    notas='Dirección activa')
-            )
         VehicleState.b_direccion = True
         VehicleState.ContEnableSteering = 0
     elif ((value & 0x01) != 0x01) and (data[5] == 0x02) and (data[6] == 0x40):
-        if VehicleState.b_freno:
-            node.pub_Alarma.publish(
-                ElemAlarmas(
-                    id_alarma=42,
-                    estado=True,
-                    t_alarma=int(time.time()),
-                    notas='Freno inactivo')
-            )
         VehicleState.b_freno = False
         logger.debug('581: Freno inactivo')
 
@@ -41,25 +24,9 @@ def deco_582(data, logger, node):
     value = (data[8] + (data[9] << 8) + (data[10] << 16) + (data[11] << 24))
     if ((value & 0x01) == 0x01) and (data[5] == 0x02) and (data[6] == 0x40):
         logger.debug('582: Freno activo')
-        if not VehicleState.b_freno:
-            node.pub_Alarma.publish(
-                ElemAlarmas(
-                    id_alarma=42,
-                    estado=False,
-                    t_alarma=int(time.time()),
-                    notas='Freno activo')
-            )
         VehicleState.b_freno = True
         VehicleState.ContEnableBrake = 0
     elif ((value & 0x01) != 0x01) and (data[5] == 0x02) and (data[6] == 0x40):
-        if VehicleState.b_freno:
-            node.pub_Alarma.publish(
-                ElemAlarmas(
-                    id_alarma=42,
-                    estado=True,
-                    t_alarma=int(time.time()),
-                    notas='Freno inactivo')
-            )
         logger.debug('582: Freno inactivo')
         VehicleState.b_freno = False
     elif data[5] == 0x7A and data[6] == 0x49:

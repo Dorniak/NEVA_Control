@@ -16,7 +16,6 @@ from rclpy.qos import HistoryPolicy
 
 from std_msgs.msg import Float64, Bool, String, UInt8
 from geometry_msgs.msg import Vector3
-from mdef_a2sat.msg import RespConduccion, PetConduccion, ElemAlarmas
 from numpy import interp
 import time
 

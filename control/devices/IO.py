@@ -5,7 +5,6 @@ import queue
 import threading
 from math import modf
 import time
-from mdef_a2sat.msg import ElemAlarmas
 from control.devices.connection import Connection
 
 
