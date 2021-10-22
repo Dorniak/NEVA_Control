@@ -21,7 +21,7 @@ class Throttle:
 
     def set_pedal_pressure(self, press):
         if self.communications.AIO.is_connected():
-            if VehicleState.b_velocidad_request and VehicleState.marchas_real != 'N':
+            if VehicleState.b_velocidad_request:
                 self.logger.debug(f'Set press {press}')
                 value = interp(max(min(press, 1), 0), [0, 1], self.device_range)
                 if value > 0.7:
@@ -55,13 +55,13 @@ class Throttle:
     def shutdown(self):
         self.set_disable()
 
-    def enable(node: int):
+    def enable(self, node: int):
         return [make_can_frame(node=node, index=0x0002, data=0x01)]
 
-    def disable(node: int):
+    def disable(self, node: int):
         return [make_can_frame(node=node, index=0x0002, data=0x00)]
 
-    def set_tension_value(node: int, tension: int):
+    def set_tension_value(self, node: int, tension: int):
         return [
             make_can_frame(node=node, index=0x0001, data=tension)
         ]

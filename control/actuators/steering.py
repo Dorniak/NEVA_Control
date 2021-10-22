@@ -1,3 +1,5 @@
+import threading
+
 from rclpy.node import Node
 from rclpy.logging import get_logger
 
@@ -11,6 +13,9 @@ import numpy as np
 class Steering:
 
     def __init__(self, cobid, node: Node, communications: Communications, log_level=10):
+        self.shutdown_flag = False
+        self.Steering_Max_Tension = 5.
+        self.Steering_Min_Tension = 0.
         self.name = 'Steering'
         self.communications = communications
         self.cobid = cobid
@@ -20,12 +25,14 @@ class Steering:
         self.pid = PIDF(kp=0.3, ti=0.2, td=0.1, anti_wind_up=0.4, pro_wind_up=0)
         self.value = 0
         self.timer = self.node.create_timer(0.1, self.sender)
-        self.timer_pid = self.node.create_timer(1 / 50., self.pid_timer)
+        self.timer_pid = threading.Thread(target=self.pid_timer, daemon=False)
+        self.timer_pid.start()
 
     def pid_timer(self):
-        taN = np.interp(VehicleState.direccion_real, [-630., 630.], [-1., 1.])
-        caN = np.interp(VehicleState.direccion, [-630., 630.], [-1., 1.])
-        self.value = -self.pid.calcValue(target_value=taN, current_value=caN)
+        while not self.shutdown_flag:
+            taN = np.interp(VehicleState.direccion_real, [-630., 630.], [-1., 1.])
+            caN = np.interp(VehicleState.direccion, [-630., 630.], [-1., 1.])
+            self.value = -self.pid.calcValue(target_value=taN, current_value=caN)
 
     def sender(self):
         if VehicleState.b_direccion_request:
@@ -34,7 +41,7 @@ class Steering:
                 self.set_enable()
                 self.set_magnet_enable()
 
-            tension = np.interp(self.value, [-1, 1], [Steering_Min_Tension, Steering_Max_Tension])
+            tension = np.interp(self.value, [-1, 1], [self.Steering_Min_Tension, self.Steering_Max_Tension])
             self.logger.debug(f'Direccion {VehicleState.direccion}  Real {VehicleState.direccion_real}')
             error = VehicleState.direccion - VehicleState.direccion_real
             self.logger.debug(f'Send: {error}  abs value: {VehicleState.direccion}')
@@ -52,6 +59,7 @@ class Steering:
             make_can_frame(node=self.cobid, index=0x6040, data=6),
             make_can_frame(node=self.cobid, index=0x6040, data=15)
         ])
+
     # TODO: Falta el enable/disable
     def set_magnet_enable(self):
         self.logger.debug('Magnet enable')
@@ -66,6 +74,6 @@ class Steering:
             self.communications.AIO.put_queue([[0, 3], [0, 3], [0, 3]])
 
     def shutdown(self):
+        self.shutdown_flag = True
         self.set_magnet_disable()
         self.timer.cancel()
-        self.timer_pid.cancel()

@@ -1,7 +1,7 @@
 control:
   NEVA_Control:
     ros__parameters:
-      id_platform: VAMTAC_INSIA
+      id_platform: NEVA
       log_level: 20
       test: False
 

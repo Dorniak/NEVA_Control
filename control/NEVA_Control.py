@@ -246,7 +246,7 @@ class Control(Node):
     #     VehicleState.steering = value.data
 
     def control_speed(self):
-        if self.brake is not None and self.brake.calibrated:
+        if self.brake is not None:
             try:
                 if VehicleState.b_velocidad_request:
                     if not self.throttle.is_enable:

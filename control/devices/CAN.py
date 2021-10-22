@@ -9,38 +9,14 @@ from control.devices.base import VehicleState
 from control.devices.connection import Connection
 
 
-def deco_581(data, logger, node):
-    value = (data[8] + (data[9] << 8) + (data[10] << 16) + (data[11] << 24))
-    if ((value & 0x01) == 0x01) and (data[5] == 0x02) and (data[6] == 0x40):
-        logger.debug('581: Dirección activa')
-        VehicleState.b_direccion = True
-        VehicleState.ContEnableSteering = 0
-    elif ((value & 0x01) != 0x01) and (data[5] == 0x02) and (data[6] == 0x40):
-        VehicleState.b_freno = False
-        logger.debug('581: Freno inactivo')
-
-
-def deco_582(data, logger, node):
-    value = (data[8] + (data[9] << 8) + (data[10] << 16) + (data[11] << 24))
-    if ((value & 0x01) == 0x01) and (data[5] == 0x02) and (data[6] == 0x40):
-        logger.debug('582: Freno activo')
-        VehicleState.b_freno = True
-        VehicleState.ContEnableBrake = 0
-    elif ((value & 0x01) != 0x01) and (data[5] == 0x02) and (data[6] == 0x40):
-        logger.debug('582: Freno inactivo')
-        VehicleState.b_freno = False
-    elif data[5] == 0x7A and data[6] == 0x49:
-        VehicleState.ActualAngleBrakeMotorAbs = (value * 360.0) / 172032.0
-        logger.debug(f'582: Actual angle brake abs: {VehicleState.ActualAngleBrakeMotorAbs}')
-    elif (data[5] == 0x21) and (data[6] == 0x42):
-        VehicleState.CurrentLimitMaxPos = value
-        logger.debug(f'582: Current limit max pos: {value}')
-    elif (data[5] == 0x32) and (data[6] == 0x40):
-        VehicleState.CurrentLimitMax = value
-        logger.debug(f'582: Current limit max: {value}')
-    elif (data[5] == 0x70) and (data[6] == 0x49):
-        VehicleState.StatusEncoderMotor = value
-        logger.debug(f'582: Status encoder: {value}')
+# def deco_581(data, logger, node):
+#     value = (data[8] + (data[9] << 8) + (data[10] << 16) + (data[11] << 24))
+#     if ((value & 0x01) == 0x01) and (data[5] == 0x02) and (data[6] == 0x40):
+#         logger.debug('581: Dirección activa')
+#         VehicleState.b_direccion = True
+#     elif ((value & 0x01) != 0x01) and (data[5] == 0x02) and (data[6] == 0x40):
+#         VehicleState.b_freno = False
+#         logger.debug('581: Freno inactivo')
 
 
 def deco_0CC(data, logger, node):
@@ -76,8 +52,7 @@ def deco_98F00503(data, logger, node):
         logger.error(f'Error en la recepción de marcha {hex(value)}  {e}')
 
 
-dict_decoder = {0x581: deco_581,
-                0x582: deco_582,
+dict_decoder = {#0x581: deco_581,
                 0x0CC: deco_0CC,
                 0x316: deco_316,
                 0x98F00503: deco_98F00503}
@@ -147,7 +122,7 @@ class CAN:
             else:
                 try:
                     if COBID in dict_decoder.keys():
-                        if not (COBID == 0x316 and VehicleState.changing):
+                        if not (COBID == 0x316):
                             dict_decoder[COBID](data, self.logger, self.node)
                     else:
                         self.logger.debug(f'Received package not managed in: {hex(COBID)}')
