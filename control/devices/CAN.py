@@ -18,20 +18,27 @@ from control.devices.connection import Connection
 #         VehicleState.b_freno = False
 #         logger.debug('581: Freno inactivo')
 
+def deco_176(data, logger, node):
+    import struct
+    value = struct.unpack('>H', data[4:6])[0] * 0.1
+    logger.debug(f'Velocidad real recibida {value}')
+    VehicleState.velocidad_real = value
+
 
 def deco_002(data, logger, node):
-    # TODO: Revisar
     import struct
-    data = struct.unpack('<h', data[6:8])[0]
-    value = (data * 0.1)-74.4
+    data = struct.unpack('>h', data[5:7])[0]
+    value = (data * 0.1)
     logger.debug(f'Dirección real recibida {value}')
     VehicleState.direccion_real = value
 
+
 def deco_1CB(data, logger, node):
-    # TODO: Revisar
     import struct
-    value = struct.unpack('<h', data[6:8]  & 0x3FF)[0]
+    value = struct.unpack('>H', data[6:8])[0] * 0.001527
+    VehicleState.freno_real = value
     logger.debug(f'Posicion freno recibida {value}')
+
 
 def deco_316(data, logger, node):
     value = (data[4] + (data[5] * 256)) / 1000
@@ -58,11 +65,11 @@ def deco_98F00503(data, logger, node):
         logger.error(f'Error en la recepción de marcha {hex(value)}  {e}')
 
 
-dict_decoder = {#0x581: deco_581,
-                0x002: deco_002,
-                0x1CB: deco_1CB,
-                0x316: deco_316,
-                0x98F00503: deco_98F00503}
+dict_decoder = {  # 0x581: deco_581,
+    0x002: deco_002,
+    0x1CB: deco_1CB,
+    0x316: deco_316,
+    0x98F00503: deco_98F00503}
 
 
 class CAN:
