@@ -59,7 +59,7 @@ class PIDF(object):
 
         return p + i + d
 
-    def calcValue(self, target_value, current_value, kp, td, ti, anti_wind_up_change=False, use=(True, True, True)):
+    def calcValue_2(self, target_value, current_value, kp, td, ti, anti_wind_up_change=False, use=(True, True, True)):
         self.error = target_value - current_value
 
         if use[0] and self.kp != 0:
