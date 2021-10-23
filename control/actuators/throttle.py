@@ -11,7 +11,8 @@ class Throttle:
 
     def __init__(self, communications: Communications = None, dev_range=None, log_level=10):
         if dev_range is None:
-            dev_range = [0.9, 3.3]
+            dev_range = [0.6, 4.8]
+        self.cobid = 5
         self.name = 'Throttle'
         self.communications = communications
         self.device_range = dev_range
@@ -20,48 +21,34 @@ class Throttle:
         self.is_enable = False
 
     def set_pedal_pressure(self, press):
-        if self.communications.AIO.is_connected():
+        if self.communications.CAN2.is_connected():
             if VehicleState.b_velocidad_request:
                 self.logger.debug(f'Set press {press}')
                 value = interp(max(min(press, 1), 0), [0, 1], self.device_range)
-                if value > 0.7:
-                    self.communications.AIO.put_queue([[4.92, 1], [value, 0]])
-                    self.communications.AIO.put_queue([[4.92, 1], [value, 0]])
-                else:
-                    self.communications.AIO.put_queue([[0.1, 1], [value, 0]])
-                    self.communications.AIO.put_queue([[0.1, 1], [value, 0]])
+                self.communications.CAN2.add_to_queue(self.set_tension_value(value))
             else:
                 self.raise_maximum()
         else:
-            self.logger.debug('AIO is not connected throttle didnt send')
+            self.logger.debug('CAN2 is not connected throttle didnt send')
 
     def raise_maximum(self):
-        self.communications.AIO.put_queue([[0.1, 1], [0.6, 0]])  # sleep final 0.05
-
-    def set_enable(self):
-        self.logger.debug(f'{self.name}: Enable')
-        if self.communications.AIO.is_connected():
-            VehicleState.b_acelerador = True
-            self.communications.AIO.put_queue([[0.1, 1, 0.1], [0.6, 0, 0.05], [3.0, 2, 0.1, 0.1]])
-            self.is_enable = True
-
-    def set_disable(self):
-        self.logger.debug(f'{self.name}: Disable')
-        if self.communications.AIO.is_connected():
-            VehicleState.b_acelerador = False
-            self.communications.AIO.put_queue([[0.0, 2, 0.1], [0.1, 1, 0.1], [0.6, 0, 0.05], [0.0, 2, 0.1, 0.1]])
-            self.is_enable = False
+        self.communications.CAN2.add_to_queue(self.set_tension_value(self.device_range[0]))
 
     def shutdown(self):
         self.set_disable()
 
-    def enable(self, node: int):
-        return [make_can_frame(node=node, index=0x0002, data=0x01)]
-
-    def disable(self, node: int):
-        return [make_can_frame(node=node, index=0x0002, data=0x00)]
-
-    def set_tension_value(self, node: int, tension: int):
+    def set_enable(self):
+        self.is_enable = True
         return [
-            make_can_frame(node=node, index=0x0001, data=tension)
+            make_can_frame(node=self.cobid, index=0x0001, data=self.device_range[0]),
+            make_can_frame(node=self.cobid, index=0x0002, data=0x01)
+        ]
+
+    def set_disable(self):
+        self.is_enable = False
+        return [make_can_frame(node=self.cobid, index=0x0002, data=0x00)]
+
+    def set_tension_value(self, tension: float):
+        return [
+            make_can_frame(node=self.cobid, index=0x0001, data=tension)
         ]

@@ -25,6 +25,7 @@ class Steering:
         self.node = node
         self.pid = PIDF(kp=0.3, ti=0.2, td=0.1, anti_wind_up=0.4, pro_wind_up=0)
         self.value = 0
+        self.init_device()
         self.timer = self.node.create_timer(0.1, self.sender)
         self.timer_pid = threading.Thread(target=self.pid_timer, daemon=False)
         self.timer_pid.start()
@@ -41,7 +42,6 @@ class Steering:
             if not VehicleState.b_direccion:
                 self.logger.debug('Try to enable')
                 self.set_enable()
-                self.set_magnet_enable()
 
             tension = np.interp(self.value, [-1, 1], [self.Steering_Min_Tension, self.Steering_Max_Tension])
             self.logger.debug(f'Direccion {VehicleState.direccion}  Real {VehicleState.direccion_real}')
@@ -51,32 +51,29 @@ class Steering:
                 make_can_frame(node=self.cobid, index=0x6071, sub_index=0, data=tension)])
         else:
             if VehicleState.b_direccion:
-                self.set_magnet_disable()
+                self.set_disable()
 
     def set_enable(self):
         self.logger.debug('Sending enable sequence')
         self.communications.CAN2.add_to_queue([
-            make_can_frame(node=self.cobid, index=0x6060, data=10),
             make_can_frame(node=self.cobid, index=0x6040, data=0),
             make_can_frame(node=self.cobid, index=0x6040, data=6),
             make_can_frame(node=self.cobid, index=0x6040, data=15)
         ])
 
-    # TODO: Falta el enable/disable
-    def set_magnet_enable(self):
-        self.logger.debug('Magnet enable')
-        if self.communications.AIO.is_connected():
-            VehicleState.b_direccion = True
-            self.communications.AIO.put_queue([[3.0, 3], [3.0, 3], [3.0, 3]])
+    def init_device(self):
+        self.communications.CAN2.add_to_queue([
+            make_can_frame(node=self.cobid, index=0x6040, data=0x0080),
+            make_can_frame(node=self.cobid, index=0x6081, data=0x1388),  # rpm 5000
+            make_can_frame(node=self.cobid, index=0x6060, data=10),  # mode profile torque mode
+        ])
 
-    def set_magnet_disable(self):
-        self.logger.debug('Disable')
-        if self.communications.AIO.is_connected():
-            VehicleState.b_direccion = False
-            self.communications.AIO.put_queue([[0, 3], [0, 3], [0, 3]])
+    def set_disable(self):
+        self.communications.CAN2.add_to_queue([
+            make_can_frame(node=self.cobid, index=0x6040, data=0X07),
+        ])
 
     def shutdown(self):
         self.logger.warn('Shutdown')
         self.shutdown_flag = True
-        self.set_magnet_disable()
         self.timer.cancel()

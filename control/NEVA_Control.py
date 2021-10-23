@@ -6,7 +6,6 @@ from control.actuators.steering import Steering
 from control.actuators.throttle import Throttle
 from control.devices.communications import Communications
 from control.devices.CAN import CAN
-from control.devices.IO import AIO, DIO
 from control.devices.pid import PID
 
 import rclpy
@@ -29,7 +28,6 @@ class Control(Node):
         self.logger = self.get_logger()
         self._log_level: Parameter = self.get_parameter_or('log_level', Parameter(name='log_level', value=10))
         self.logger.set_level(self._log_level.value)
-
 
         VehicleState()
         VehicleState.id_platforma = self.get_parameter_or('id_platform',
@@ -57,16 +55,6 @@ class Control(Node):
         self.comunications.CAN2 = CAN(name='CAN 2', node=self, ip=params['ip'].value, port=params['port'].value,
                                       extend=params['extend'].value, log_level=params['log_level'].value,
                                       write_timer_period=100)
-
-        self.logger.info('Connection AIO')
-        params = self.get_parameters_by_prefix('AIO')
-        self.comunications.AIO = AIO(name='AIO', node=self, ip=params['ip'].value, port=params['port'].value,
-                                     log_level=params['log_level'].value)
-
-        self.logger.info('Connection DIO')
-        params = self.get_parameters_by_prefix('DIO')
-        self.comunications.DIO = DIO(name='DIO', ip=params['ip'].value, port=params['port'].value,
-                                     log_level=params['log_level'].value)
 
         # Subscriber vehicle request
         self.create_subscription(msg_type=Float64, topic='/NEVA/direccion',
@@ -133,10 +121,11 @@ class Control(Node):
     def sub_b_velocidad(self, data):
         if self.brake is not None:
             if data.data:
-                VehicleState.b_freno = True
+                if not VehicleState.b_freno:
+                    self.brake.set_enable()
             else:
-                VehicleState.b_freno = False
                 self.brake.raise_maximum()
+                self.brake.set_disable()
         if self.throttle is not None:
             if data.data:
                 if not self.throttle.is_enable:
@@ -144,8 +133,6 @@ class Control(Node):
             else:
                 if self.throttle.is_enable:
                     self.throttle.set_disable()
-                if self.brake is not None:
-                    self.brake.set_pedal_pressure(0)
 
         VehicleState.b_velocidad_request = data.data
 
@@ -160,7 +147,6 @@ class Control(Node):
                 if not self.throttle.is_enable:
                     self.throttle.set_enable()
                 if not VehicleState.parada_emergencia:
-                    VehicleState.parada_emergencia = False
                     if VehicleState.velocidad <= 0.1 and VehicleState.velocidad_real <= 2:  # Parking Mode
                         self.brake.drop_maximum()
                         self.throttle.raise_maximum()
@@ -181,7 +167,8 @@ class Control(Node):
                         throttle = max(min(self.pid_throttle.calcValue(target_speed, current_speed), 1), 0)
                         brake = max(min(-self.pid_brake.calcValue(target_speed, current_speed), 1), 0)
                         self.logger.debug(f"Throttle: {throttle} , Brake: {brake}")
-                        if (brake > 0 and (VehicleState.velocidad_real - VehicleState.velocidad)>2) or VehicleState.velocidad ==0:
+                        if (brake > 0 and (
+                                VehicleState.velocidad_real - VehicleState.velocidad) > 2) or VehicleState.velocidad == 0:
                             self.throttle.raise_maximum()
                             self.brake.set_pedal_pressure(brake)
                         else:
@@ -224,7 +211,7 @@ def main(args=None):
         manager.shutdown()
     except Exception as e:
         print(f'Exception main {e}')
-        #print(format_exc())
+        # print(format_exc())
 
 
 if __name__ == '__main__':

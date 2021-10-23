@@ -3,7 +3,6 @@ control:
     ros__parameters:
       id_platform: NEVA
       log_level: 20
-      test: False
 
       CAN_1:
         ip: 192.168.0.6
@@ -12,19 +11,9 @@ control:
         log_level: 0
 
       CAN_2:
-        ip: 192.168.0.8
+        ip: 192.168.0.7
         port: 10001
         extend: False
-        log_level: 0
-
-      DIO:
-        ip: 192.168.0.7
-        port: 4601
-        log_level: 0
-
-      AIO:
-        ip: 192.168.0.7
-        port: 4600
         log_level: 0
 
       steering:
@@ -39,10 +28,6 @@ control:
       brake:
         on: True
         cobid: 2
-        log_level: 0
-
-      gears:
-        on: True
         log_level: 0
 
       pid:
