@@ -293,15 +293,7 @@ class Control(Node):
 
     def shutdown(self):
         try:
-            self.timer_motor.cancel()
-        except Exception:
-            pass
-        try:
             self.timer_speed_control.cancel()
-        except Exception:
-            pass
-        try:
-            self.timer_RespConduccion.cancel()
         except Exception:
             pass
         if self.brake is not None:

@@ -8,6 +8,7 @@ from control.devices.base import VehicleState
 from control.devices.communications import Communications
 from control.devices.pid import PIDF
 import numpy as np
+from time import sleep
 
 
 class Steering:
@@ -33,6 +34,7 @@ class Steering:
             taN = np.interp(VehicleState.direccion_real, [-630., 630.], [-1., 1.])
             caN = np.interp(VehicleState.direccion, [-630., 630.], [-1., 1.])
             self.value = -self.pid.calcValue(target_value=taN, current_value=caN)
+            sleep(0.1)
 
     def sender(self):
         if VehicleState.b_direccion_request:
