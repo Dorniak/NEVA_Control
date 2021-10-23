@@ -15,9 +15,7 @@ from rclpy.parameter import Parameter
 from rclpy.qos import HistoryPolicy
 
 from std_msgs.msg import Float64, Bool, String, UInt8
-from geometry_msgs.msg import Vector3
 from numpy import interp
-import time
 
 
 # noinspection PyBroadException
@@ -36,12 +34,6 @@ class Control(Node):
         VehicleState()
         VehicleState.id_platforma = self.get_parameter_or('id_platform',
                                                           Parameter(name='id_platform', value='Unknown vehicle')).value
-
-        self.IantA = 0.
-        self.DantA = 0.
-        self.IantF = 0.
-        self.DantF = 0.
-        self.Vant = 0.
 
         params = self.get_parameters_by_prefix('pid')
 
@@ -77,13 +69,13 @@ class Control(Node):
                                      log_level=params['log_level'].value)
 
         # Subscriber vehicle request
-        self.create_subscription(msg_type=Float64, topic='/Vamtac/direccion',
+        self.create_subscription(msg_type=Float64, topic='/NEVA/direccion',
                                  callback=self.sub_direccion, qos_profile=HistoryPolicy.KEEP_LAST)
-        self.create_subscription(msg_type=Float64, topic='/Vamtac/velocidad',
+        self.create_subscription(msg_type=Float64, topic='/NEVA/velocidad',
                                  callback=self.sub_velocidad, qos_profile=HistoryPolicy.KEEP_LAST)
-        self.create_subscription(msg_type=Bool, topic='/Vamtac/b_velocidad',
+        self.create_subscription(msg_type=Bool, topic='/NEVA/b_velocidad',
                                  callback=self.sub_b_velocidad, qos_profile=HistoryPolicy.KEEP_LAST)
-        self.create_subscription(msg_type=Bool, topic='/Vamtac/b_direccion',
+        self.create_subscription(msg_type=Bool, topic='/NEVA/b_direccion',
                                  callback=self.sub_b_direccion, qos_profile=HistoryPolicy.KEEP_LAST)
 
         # Configuring devices
@@ -121,9 +113,6 @@ class Control(Node):
         # Timers
         # self.logger.info('Publisher Resp Conduccion working')
         # self.timer_RespConduccion = self.create_timer(1 / 10, self.publish_RespConduccion)
-
-        # self.logger.info('Keep alive timer working')
-        # self.timer_motor = self.create_timer(2, self.motors_keep_alive)
 
         if self.brake is not None and self.throttle is not None:
             self.logger.info('Speed control working')
@@ -165,131 +154,48 @@ class Control(Node):
 
     # Subscriber real
 
-    # def sub_pet_conduccion(self, data):
-    #     VehicleState.direccion = - max(min(data.direccion, 600), -600)
-    #     VehicleState.velocidad = data.velocidad
-    #     VehicleState.marchas = data.marchas
-    #
-    #     if VehicleState.parada_emergencia_request != data.desact_parada_emergencia and self.brake is not None:
-    #         if data.desact_parada_emergencia:
-    #             self.brake.emergency_brake()
-    #         else:
-    #             self.brake.end_emergency_brake()
-    #
-    #     VehicleState.parada_emergencia_request = data.desact_parada_emergencia
-    #
-    #     VehicleState.override_request = data.override
-    #     VehicleState.obstaculo_conectado = data.override
-    #
-    #     if self.brake is not None and self.brake.calibrated:
-    #         if data.b_velocidad:
-    #             VehicleState.b_freno = True
-    #         else:
-    #             VehicleState.b_freno = False
-    #             self.brake.raise_maximum()
-    #     if self.throttle is not None:
-    #         if data.b_velocidad:
-    #             if not self.throttle.is_enable:
-    #                 self.throttle.set_enable()
-    #         else:
-    #             if self.throttle.is_enable:
-    #                 self.throttle.set_disable()
-    #             if not VehicleState.parada_emergencia and self.brake.calibrated:
-    #                 if self.brake is not None:
-    #                     self.brake.set_pedal_pressure(0)
-    #
-    #     VehicleState.b_velocidad_request = data.b_velocidad
-    #
-    #     VehicleState.b_direccion_request = data.b_direccion
-    #
-    #     VehicleState.b_marchas = data.b_marchas
-    #     VehicleState.b_marchas_request = data.b_marchas
-
-    # def motors_keep_alive(self):
-    #     try:
-    #         if self.comunications.CAN2 is not None and self.comunications.CAN2.is_connected():
-    #             if self.steering is not None:
-    #                 self.steering.send_motor_enable()
-    #                 if VehicleState.b_direccion and VehicleState.ContEnableSteering >= -4:
-    #                     pass
-    #                 else:
-    #                     if not (VehicleState.b_direccion and VehicleState.ContEnableSteering >= -1):
-    #                         self.pub_Alarma.publish(
-    #                             ElemAlarmas(
-    #                                 id_alarma=40,
-    #                                 estado=True,
-    #                                 severidad=3,
-    #                                 t_alarma=int(time.time()))
-    #                         )
-    #                         self.steering.set_enable()
-    #                         self.steering.send_motor_enable()
-    #             if self.brake is not None and self.brake.calibrated:
-    #                 self.brake.send_motor_enable()
-    #                 if VehicleState.b_freno and VehicleState.ContEnableBrake >= -4:
-    #                     pass
-    #                 else:
-    #                     if not (VehicleState.b_freno and VehicleState.ContEnableBrake >= -1):
-    #                         self.pub_Alarma.publish(
-    #                             ElemAlarmas(
-    #                                 id_alarma=42,
-    #                                 estado=True,
-    #                                 severidad=3,
-    #                                 t_alarma=int(time.time()))
-    #                         )
-    #                         self.brake.set_enable()
-    #                         self.brake.send_motor_enable()
-    #
-    #     except Exception as e:
-    #         self.logger.error(f'Exception in keep alive {e}')
-
-    # def _position_sensor_callback(self, value: Float64):
-    #     VehicleState.steering = value.data
-
     def control_speed(self):
-        if self.brake is not None:
-            try:
-                if VehicleState.b_velocidad_request:
-                    if not self.throttle.is_enable:
-                        self.throttle.set_enable()
-                    if not VehicleState.parada_emergencia:
-                        VehicleState.parada_emergencia = False
-                        if VehicleState.velocidad <= 0.1 and VehicleState.velocidad_real <= 2:  # Parking Mode
-                            self.brake.drop_maximum()
-                            self.throttle.raise_maximum()
-                            self.logger.debug("Parking mode")
-                        else:
-                            params = self.get_parameters_by_prefix('pid')
-                            self.pid_brake.Kp = params['b_kp'].value
-                            self.pid_brake.Ti = params['b_ti'].value
-                            self.pid_brake.Td = params['b_td'].value
-
-                            self.pid_throttle.Kp = params['t_kp'].value
-                            self.pid_throttle.Ti = params['t_ti'].value
-                            self.pid_throttle.Td = params['t_td'].value
-
-                            target_speed = interp(VehicleState.velocidad, [0., 30.], [0., 1.])
-                            current_speed = interp(VehicleState.velocidad_real, [0., 30.], [0., 1.])
-
-                            throttle = max(min(self.pid_throttle.calcValue(target_speed, current_speed), 1), 0)
-                            brake = max(min(-self.pid_brake.calcValue(target_speed, current_speed), 1), 0)
-                            self.logger.debug(f"Throttle: {throttle} , Brake: {brake}")
-                            if (brake > 0 and (VehicleState.velocidad_real - VehicleState.velocidad)>2) or VehicleState.velocidad ==0:
-                                self.throttle.raise_maximum()
-                                self.brake.set_pedal_pressure(brake)
-                            else:
-                                self.throttle.set_pedal_pressure(throttle)
-                                self.brake.raise_maximum()
-                    else:
+        try:
+            if VehicleState.b_velocidad_request:
+                if not self.throttle.is_enable:
+                    self.throttle.set_enable()
+                if not VehicleState.parada_emergencia:
+                    VehicleState.parada_emergencia = False
+                    if VehicleState.velocidad <= 0.1 and VehicleState.velocidad_real <= 2:  # Parking Mode
+                        self.brake.drop_maximum()
                         self.throttle.raise_maximum()
-                        VehicleState.parada_emergencia = True
+                        self.logger.debug("Parking mode")
+                    else:
+                        params = self.get_parameters_by_prefix('pid')
+                        self.pid_brake.Kp = params['b_kp'].value
+                        self.pid_brake.Ti = params['b_ti'].value
+                        self.pid_brake.Td = params['b_td'].value
+
+                        self.pid_throttle.Kp = params['t_kp'].value
+                        self.pid_throttle.Ti = params['t_ti'].value
+                        self.pid_throttle.Td = params['t_td'].value
+
+                        target_speed = interp(VehicleState.velocidad, [0., 30.], [0., 1.])
+                        current_speed = interp(VehicleState.velocidad_real, [0., 30.], [0., 1.])
+
+                        throttle = max(min(self.pid_throttle.calcValue(target_speed, current_speed), 1), 0)
+                        brake = max(min(-self.pid_brake.calcValue(target_speed, current_speed), 1), 0)
+                        self.logger.debug(f"Throttle: {throttle} , Brake: {brake}")
+                        if (brake > 0 and (VehicleState.velocidad_real - VehicleState.velocidad)>2) or VehicleState.velocidad ==0:
+                            self.throttle.raise_maximum()
+                            self.brake.set_pedal_pressure(brake)
+                        else:
+                            self.throttle.set_pedal_pressure(throttle)
+                            self.brake.raise_maximum()
                 else:
-                    if self.throttle.is_enable:
-                        self.throttle.set_disable()
-                    self.brake.raise_maximum()
-            except Exception as e:
-                self.logger.error(f'Exception in speed control {e}')
-        else:
-            self.logger.debug('Brake not calibrated yet')
+                    self.throttle.raise_maximum()
+                    VehicleState.parada_emergencia = True
+            else:
+                if self.throttle.is_enable:
+                    self.throttle.set_disable()
+                self.brake.raise_maximum()
+        except Exception as e:
+            self.logger.error(f'Exception in speed control {e}')
 
     def shutdown(self):
         self.logger.warn('Shutdown')
@@ -316,8 +222,9 @@ def main(args=None):
     except KeyboardInterrupt:
         print('Keyboard interrupt')
         manager.shutdown()
-    except Exception:
-        print(format_exc())
+    except Exception as e:
+        print(f'Exception main {e}')
+        #print(format_exc())
 
 
 if __name__ == '__main__':
