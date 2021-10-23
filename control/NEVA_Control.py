@@ -302,8 +302,6 @@ class Control(Node):
             self.brake.shutdown = True
         if self.steering is not None:
             self.steering.shutdown()
-        if self.gears is not None:
-            self.gears.shutdown()
         if self.throttle is not None:
             self.throttle.shutdown()
         self.comunications.shutdown()
