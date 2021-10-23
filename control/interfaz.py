@@ -12,6 +12,7 @@ import threading
 from neva_msg.msg import Status
 from rclpy.qos import HistoryPolicy
 from std_msgs.msg import Float64, Bool
+from numpy import interp
 
 
 class First_window(QMainWindow):
@@ -28,6 +29,8 @@ class NEVA_GUI(Node):
 
         self.window = mainwindow
         self.window.ui.id.setText('NEVA')
+        self.window.ui.reset_lateral.clicked.connect(self.reset_volante)
+        self.window.ui.reset_longitudinal.clicked.connect(self.reset_velocidad)
 
         self.sub = self.create_subscription(Status, '/NEVA/status', self.subscriber_status,
                                             qos_profile=HistoryPolicy.KEEP_LAST)
@@ -43,10 +46,17 @@ class NEVA_GUI(Node):
 
         self.timer = self.create_timer(1 / 10, self.publish_Control)
 
+    def reset_volante(self):
+        self.window.ui.LateralSlider.setValue(0)
+
+    def reset_velocidad(self):
+        self.window.ui.LongitudinalSlider.setValue(0)
+
     def publish_Control(self):
         self.pub_b_volante.publish(Bool(data=self.window.ui.b_volante.isChecked()))
         self.pub_b_velocidad.publish(Bool(data=self.window.ui.b_velocidad.isChecked()))
-        self.pub_volante.publish(Float64(data=float(self.window.ui.LateralSlider.value())))
+        volante = interp(self.window.ui.LateralSlider.value(), (-100, 100), (-430, 430))
+        self.pub_volante.publish(Float64(data=float(volante)))
         self.pub_velocidad.publish(Float64(data=float(self.window.ui.LongitudinalSlider.value())))
 
     def subscriber_status(self, msg):
