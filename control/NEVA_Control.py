@@ -316,7 +316,6 @@ def main(args=None):
     except KeyboardInterrupt:
         print('Keyboard interrupt')
         manager.shutdown()
-        manager.destroy_node()
     except Exception:
         print(format_exc())
 
