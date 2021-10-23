@@ -10,15 +10,6 @@ from control.devices.connection import Connection
 from struct import unpack
 
 
-# def deco_581(data, logger, node):
-#     value = (data[8] + (data[9] << 8) + (data[10] << 16) + (data[11] << 24))
-#     if ((value & 0x01) == 0x01) and (data[5] == 0x02) and (data[6] == 0x40):
-#         logger.debug('581: Dirección activa')
-#         VehicleState.b_direccion = True
-#     elif ((value & 0x01) != 0x01) and (data[5] == 0x02) and (data[6] == 0x40):
-#         VehicleState.b_freno = False
-#         logger.debug('581: Freno inactivo')
-
 def deco_176(data, logger, node):
     value = unpack('>H', data[4:6])[0] * 0.1
     logger.debug(f'Velocidad real recibida {value}')
@@ -38,36 +29,30 @@ def deco_1CB(data, logger, node):
     logger.debug(f'Posicion freno recibida {value}')
 
 
-def deco_316(data, logger, node):
-    value = (data[4] + (data[5] * 256)) / 1000
-    logger.debug(f'Velocidad real recibida {value} type {type(value)}')
-    VehicleState.velocidad_real = float(data[4] + (data[5] * 256)) / 1000
-
-
-gear_deco = {
-    0x52: 'R',
-    0x4E: 'N',
-    0x35: 'OD',
-    0x34: 'D',
-    0x32: '2',
-    0x31: '1',
+gear_decoder = {
+    1: 'P',
+    2: 'R',
+    3: 'N',
+    4: 'D',
+    7: 'B',
 }
 
 
-def deco_98F00503(data, logger, node):
-    value = data[8]
-    logger.debug(f'Marcha real recibida {hex(value)} type {type(value)}')
+def deco_421(data, logger, node):
     try:
-        VehicleState.marchas_real = gear_deco.get(data[8])
+        value = unpack('>B', data[3] & 0x1F)[0]
+        VehicleState.marcha_real = gear_decoder.get(value, 'N')
+        logger.debug(f'Marcha recibida {VehicleState.marcha_real}')
     except Exception as e:
-        logger.error(f'Error en la recepción de marcha {hex(value)}  {e}')
+        print(f'Exception decoding gear {e}')
 
 
 dict_decoder = {  # 0x581: deco_581,
     0x002: deco_002,
     0x1CB: deco_1CB,
-    0x316: deco_316,
-    0x98F00503: deco_98F00503}
+    0x176: deco_176,
+    0x421: deco_421,
+}
 
 
 class CAN:

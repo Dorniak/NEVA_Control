@@ -15,6 +15,7 @@ class VehicleState(object):
     velocidad_real: float
     direccion_real: float
     freno_real: float
+    marcha_real: str
 
     # Estado del sistema
     b_acelerador: bool
@@ -35,6 +36,7 @@ class VehicleState(object):
         VehicleState.velocidad_real = 0.
         VehicleState.direccion_real = 0.
         VehicleState.freno_real = 0.
+        VehicleState.marcha_real = 'N'
 
         # Estado del sistema
         VehicleState.b_acelerador = False
