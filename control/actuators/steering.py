@@ -76,6 +76,7 @@ class Steering:
             self.communications.AIO.put_queue([[0, 3], [0, 3], [0, 3]])
 
     def shutdown(self):
+        self.logger.warn('Shutdown')
         self.shutdown_flag = True
         self.set_magnet_disable()
         self.timer.cancel()
