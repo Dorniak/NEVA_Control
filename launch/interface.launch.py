@@ -9,8 +9,8 @@ def generate_launch_description():
     return LaunchDescription([
         Node(
             package='NEVA_control',
-            executable='interface',
-            parameters=[parameters_file_path],
+            executable='interfaz',
+            #parameters=[parameters_file_path],
             output='screen',
             emulate_tty=True
         )

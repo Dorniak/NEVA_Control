@@ -83,7 +83,7 @@ def main(args=None):
     gui = First_window()
     node = NEVA_GUI(mainwindow=gui, name='Status_Interface')
     gui.show()
-    spin = threading.Thread(target=startthread, kwargs=dict(Node=node), daemon=True, name='Thread publisher')
+    spin = threading.Thread(target=startthread, kwargs=dict(node=node), daemon=True, name='Thread publisher')
     spin.start()
     app.exec_()
     node.destroy_node()
