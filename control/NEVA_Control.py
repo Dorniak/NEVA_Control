@@ -292,6 +292,7 @@ class Control(Node):
             self.logger.debug('Brake not calibrated yet')
 
     def shutdown(self):
+        self.logger.warn('Shutdown')
         try:
             self.timer_speed_control.cancel()
         except Exception:

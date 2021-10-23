@@ -133,6 +133,7 @@ class CAN:
         return self.connection.connected
 
     def shutdown(self):
+        self.logger.warn('Shutdown')
         self.shutdown_flag = True
         while len(self.queue.queue) > 0:
             self.logger.info(f'waiting to close q len:{len(self.queue.queue)}')

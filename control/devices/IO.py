@@ -76,6 +76,7 @@ class AIO:
         return self.connection.connected
 
     def shutdown(self):
+        self.logger.warn('Shutdown')
         self.shutdown_flag = True
         while len(self.queue.queue)>0:
             self.logger.info(f'waiting to close q len:{len(self.queue.queue)}')
@@ -138,5 +139,6 @@ class DIO:
         return self.connection.connected
 
     def shutdown(self):
+        self.logger.warn('Shutdown')
         self.shutdown_flag = True
         self.connection.shutdown()
