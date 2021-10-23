@@ -24,6 +24,7 @@ setup(
     entry_points={
         'console_scripts': [
             'control = control.NEVA_Control:main',
+            'interfaz = control.interfaz:main',
         ],
     },
 )

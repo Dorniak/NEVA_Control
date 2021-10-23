@@ -14,6 +14,7 @@ from rclpy.parameter import Parameter
 from rclpy.qos import HistoryPolicy
 
 from std_msgs.msg import Float64, Bool, String, UInt8
+from neva_msg.msg import Status
 from numpy import interp
 
 
@@ -95,8 +96,8 @@ class Control(Node):
             self.brake = None
 
         # # Publishers
-        # self.pub_RespConduccion = self.create_publisher(msg_type=RespConduccion, topic='/TeleOperacion/Resp',
-        #                                                 qos_profile=HistoryPolicy.KEEP_LAST)
+        self.pub_Status = self.create_publisher(msg_type=Status, topic='/NEVA/status',
+                                                qos_profile=HistoryPolicy.KEEP_LAST)
 
         # Timers
         # self.logger.info('Publisher Resp Conduccion working')

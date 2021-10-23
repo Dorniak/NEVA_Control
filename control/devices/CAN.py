@@ -7,6 +7,7 @@ from rclpy.logging import get_logger
 
 from control.devices.base import VehicleState
 from control.devices.connection import Connection
+from struct import unpack
 
 
 # def deco_581(data, logger, node):
@@ -19,23 +20,20 @@ from control.devices.connection import Connection
 #         logger.debug('581: Freno inactivo')
 
 def deco_176(data, logger, node):
-    import struct
-    value = struct.unpack('>H', data[4:6])[0] * 0.1
+    value = unpack('>H', data[4:6])[0] * 0.1
     logger.debug(f'Velocidad real recibida {value}')
     VehicleState.velocidad_real = value
 
 
 def deco_002(data, logger, node):
-    import struct
-    data = struct.unpack('>h', data[5:7])[0]
+    data = unpack('>h', data[5:7])[0]
     value = (data * 0.1)
     logger.debug(f'Dirección real recibida {value}')
     VehicleState.direccion_real = value
 
 
 def deco_1CB(data, logger, node):
-    import struct
-    value = struct.unpack('>H', data[6:8])[0] * 0.001527
+    value = unpack('>H', data[6:8])[0] * 0.001527
     VehicleState.freno_real = value
     logger.debug(f'Posicion freno recibida {value}')
 
