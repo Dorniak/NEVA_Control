@@ -7,7 +7,7 @@ control:
       CAN_1:
         ip: 192.168.0.6
         port: 10001
-        extend: True
+        extend: False
         log_level: 0
 
       CAN_2:
@@ -18,7 +18,7 @@ control:
 
       steering:
         on: True
-        cobid: 1
+        cobid: 2
         log_level: 0
 
       throttle:
@@ -27,8 +27,8 @@ control:
 
       brake:
         on: True
-        cobid: 2
-        log_level: 0
+        cobid: 1
+        log_level: 10
 
       pid:
         b_kp: 1

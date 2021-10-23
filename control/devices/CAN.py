@@ -19,13 +19,19 @@ from control.devices.connection import Connection
 #         logger.debug('581: Freno inactivo')
 
 
-def deco_0CC(data, logger, node):
+def deco_002(data, logger, node):
+    # TODO: Revisar
     import struct
-    data = struct.unpack('>h', data[7:9])[0]
-    value = -(data * 0.1)
+    data = struct.unpack('<h', data[6:8])[0]
+    value = (data * 0.1)-74.4
     logger.debug(f'Dirección real recibida {value}')
     VehicleState.direccion_real = value
 
+def deco_1CB(data, logger, node):
+    # TODO: Revisar
+    import struct
+    value = struct.unpack('<h', data[6:8]  & 0x3FF)[0]
+    logger.debug(f'Posicion freno recibida {value}')
 
 def deco_316(data, logger, node):
     value = (data[4] + (data[5] * 256)) / 1000
@@ -53,7 +59,8 @@ def deco_98F00503(data, logger, node):
 
 
 dict_decoder = {#0x581: deco_581,
-                0x0CC: deco_0CC,
+                0x002: deco_002,
+                0x1CB: deco_1CB,
                 0x316: deco_316,
                 0x98F00503: deco_98F00503}
 

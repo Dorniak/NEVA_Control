@@ -27,6 +27,7 @@ class VehicleState(object):
     b_velocidad_request: bool
     b_direccion_request: bool
     b_marchas_request: bool
+    parada_emergencia: bool
 
     def __new__(cls):
         VehicleState.id_platforma = ''
@@ -43,6 +44,7 @@ class VehicleState(object):
         VehicleState.velocidad = 0.
         VehicleState.b_velocidad_request = False
         VehicleState.b_direccion_request = False
+        VehicleState.parada_emergencia = False
 
 
 if __name__ == '__main__':

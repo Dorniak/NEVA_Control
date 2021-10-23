@@ -36,6 +36,7 @@ class Brake:
         self.set_motor_abs(self.device_range[1])
 
     def set_motor_abs(self, value):
+        self.logger.debug(f'{self.name}: Abs {value}')
         cuentas = int((402000 * value) / 360)
         self.communications.CAN2.add_to_queue([
             make_can_frame(node=self.cobid, index=0x607A, data=cuentas),
@@ -44,6 +45,7 @@ class Brake:
         ])
 
     def set_motor_rel(self, value):
+        self.logger.debug(f'{self.name}: Rel {value}')
         cuentas = int((402000 * value) / 360)
         self.communications.CAN2.add_to_queue([
             make_can_frame(node=self.cobid, index=0x607A, data=cuentas),
@@ -62,5 +64,6 @@ class Brake:
         ])
 
     def set_disable(self):
+        self.logger.debug(f'{self.name}: False')
         VehicleState.b_freno = False
         pass
