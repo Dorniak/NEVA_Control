@@ -14,10 +14,10 @@ from time import sleep
 class Steering:
 
     def __init__(self, cobid, node: Node, communications: Communications, log_level=10):
-        self.dev_range = [-400,400]
+        self.dev_range = [-400, 400]
         self.shutdown_flag = False
-        self.Steering_Max_Tension = 5.
-        self.Steering_Min_Tension = 0.
+        self.Steering_Max_Torque = 2000
+        self.Steering_Min_Torque = -2000
         self.name = 'Steering'
         self.communications = communications
         self.cobid = cobid
@@ -45,13 +45,13 @@ class Steering:
                 self.logger.debug('Try to enable')
                 self.set_enable()
 
-            tension = np.interp(self.value, [-1, 1], [self.Steering_Min_Tension, self.Steering_Max_Tension])
-            #self.logger.debug(f'Direccion {VehicleState.direccion}  Real {VehicleState.direccion_real}')
+            torque = np.interp(self.value, [-1, 1], [self.Steering_Min_Torque, self.Steering_Max_Torque])
+            # self.logger.debug(f'Direccion {VehicleState.direccion}  Real {VehicleState.direccion_real}')
             error = VehicleState.direccion - VehicleState.direccion_real
-            #self.logger.debug(f'Send: {error}  abs value: {VehicleState.direccion}')
-            self.logger.debug(f'Tension {tension}')
+            # self.logger.debug(f'Send: {error}  abs value: {VehicleState.direccion}')
+            self.logger.debug(f'Torque {torque}')
             self.communications.CAN2.add_to_queue([
-                make_can_frame(node=self.cobid, index=0x6071, sub_index=0, data=int(tension*100))])
+                make_can_frame(node=self.cobid, index=0x6071, sub_index=0, data=int(torque))])
         else:
             if VehicleState.b_direccion:
                 self.set_disable()
@@ -60,9 +60,9 @@ class Steering:
         self.logger.debug('Sending enable sequence')
         if self.communications.CAN2.is_connected():
             self.communications.CAN2.add_to_queue([
-                make_can_frame(node=self.cobid, index=0x6040, data=0),
-                make_can_frame(node=self.cobid, index=0x6040, data=6),
-                make_can_frame(node=self.cobid, index=0x6040, data=15),
+                make_can_frame(node=self.cobid, index=0x6040, data=0x80),
+                make_can_frame(node=self.cobid, index=0x6040, data=0x6),
+                make_can_frame(node=self.cobid, index=0x6040, data=0xF),
                 make_can_frame(node=self.cobid, index=0x60FE, sub_index=1, data=0x10000)
             ])
             VehicleState.b_direccion = True
