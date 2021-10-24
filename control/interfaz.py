@@ -63,8 +63,8 @@ class NEVA_GUI(Node):
         self.window.ui.velocidad_real.setText(str(round(msg.velocidad_real, 1)))
         self.window.ui.velocidad_real_2.setText(str(round(msg.velocidad_real, 1)))
 
-        self.window.ui.direccion_real.setText(str(round(msg.direccion_real, 1)))
-        self.window.ui.direccion_real_2.setText(str(round(msg.direccion_real, 1)))
+        self.window.ui.direccion_real.setText(str(round(msg.volante_real, 1)))
+        self.window.ui.direccion_real_2.setText(str(round(msg.volante_real, 1)))
 
         self.window.ui.freno_real.setText(str(round(msg.freno_real)) + ' %')
 

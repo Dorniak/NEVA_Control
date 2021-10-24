@@ -2,3 +2,11 @@
 control/actuators/__pycache__/
 
 control/devices/__pycache__/
+
+control/__pycache__/
+
+control/can_utils/__pycache__/
+
+control/gui/__pycache__/
+
+control/epos/__pycache__/

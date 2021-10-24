@@ -101,7 +101,7 @@ class Control(Node):
 
         # Timers
         # self.logger.info('Publisher Resp Conduccion working')
-        # self.timer_RespConduccion = self.create_timer(1 / 10, self.publish_RespConduccion)
+        self.timer_Status = self.create_timer(1 / 10, self.timer_status)
 
         if self.brake is not None and self.throttle is not None:
             self.logger.info('Speed control working')
@@ -142,11 +142,30 @@ class Control(Node):
 
     # Subscriber real
 
+    def timer_status(self):
+        self.pub_Status.publish(
+            Status(
+                id_plataforma=VehicleState.id_platforma,
+
+                velocidad_real=VehicleState.velocidad_real,
+                volante_real=VehicleState.direccion_real,
+                freno_real=VehicleState.freno_real,
+                marcha_real=VehicleState.marcha_real,
+
+                velocidad_target=VehicleState.velocidad,
+                volante_target=VehicleState.direccion,
+
+                b_velocidad=VehicleState.b_velocidad_request,
+                b_volante=VehicleState.b_direccion_request,
+
+                parada_emergencia_request=VehicleState.parada_emergencia_request,
+                parada_emergencia=VehicleState.parada_emergencia,
+            )
+        )
+
     def control_speed(self):
         try:
             if VehicleState.b_velocidad_request:
-                if not self.throttle.is_enable:
-                    self.throttle.set_enable()
                 if not VehicleState.parada_emergencia:
                     if VehicleState.velocidad <= 0.1 and VehicleState.velocidad_real <= 2:  # Parking Mode
                         self.brake.drop_maximum()
@@ -180,6 +199,7 @@ class Control(Node):
                     VehicleState.parada_emergencia = True
             else:
                 if self.throttle.is_enable:
+                    self.logger.error('Set disable speed control')
                     self.throttle.set_disable()
                 self.brake.raise_maximum()
         except Exception as e:

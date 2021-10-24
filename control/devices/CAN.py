@@ -40,7 +40,7 @@ gear_decoder = {
 
 def deco_421(data, logger, node):
     try:
-        value = unpack('>B', data[3] & 0x1F)[0]
+        value = data[3] & 0x1F
         VehicleState.marcha_real = gear_decoder.get(value, 'N')
         logger.debug(f'Marcha recibida {VehicleState.marcha_real}')
     except Exception as e:

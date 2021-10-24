@@ -13,7 +13,7 @@ class Brake:
 
     def __init__(self, cobid=2, communications: Communications = None, dev_range=None, log_level=10):
         if dev_range is None:
-            dev_range = [0, 150]
+            dev_range = [0, -100000]
         self.name = 'Brake'
         self.communications = communications
         self.cobid = cobid
@@ -37,18 +37,18 @@ class Brake:
 
     def set_motor_abs(self, value):
         self.logger.debug(f'{self.name}: Abs {value}')
-        cuentas = int((402000 * value) / 360)
+        # cuentas = int((402000 * value) / 360)
         self.communications.CAN2.add_to_queue([
-            make_can_frame(node=self.cobid, index=0x607A, data=cuentas),
+            make_can_frame(node=self.cobid, index=0x607A, data=value),
             make_can_frame(node=self.cobid, index=0x6040, data=0x000F),
             make_can_frame(node=self.cobid, index=0x6040, data=0x003F)
         ])
 
     def set_motor_rel(self, value):
         self.logger.debug(f'{self.name}: Rel {value}')
-        cuentas = int((402000 * value) / 360)
+        # cuentas = int((402000 * value) / 360)
         self.communications.CAN2.add_to_queue([
-            make_can_frame(node=self.cobid, index=0x607A, data=cuentas),
+            make_can_frame(node=self.cobid, index=0x607A, data=value),
             make_can_frame(node=self.cobid, index=0x6040, data=0x000F),
             make_can_frame(node=self.cobid, index=0x6040, data=0x007F)
         ])

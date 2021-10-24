@@ -14,6 +14,7 @@ from time import sleep
 class Steering:
 
     def __init__(self, cobid, node: Node, communications: Communications, log_level=10):
+        self.dev_range = [-400,400]
         self.shutdown_flag = False
         self.Steering_Max_Tension = 5.
         self.Steering_Min_Tension = 0.
@@ -32,34 +33,39 @@ class Steering:
 
     def pid_timer(self):
         while not self.shutdown_flag:
-            taN = np.interp(VehicleState.direccion_real, [-630., 630.], [-1., 1.])
-            caN = np.interp(VehicleState.direccion, [-630., 630.], [-1., 1.])
+            taN = np.interp(VehicleState.direccion_real, self.dev_range, [-1., 1.])
+            caN = np.interp(VehicleState.direccion, self.dev_range, [-1., 1.])
             self.value = -self.pid.calcValue(target_value=taN, current_value=caN)
             sleep(0.1)
 
     def sender(self):
+        self.logger.debug(f'sender: {VehicleState.b_direccion_request}')
         if VehicleState.b_direccion_request:
             if not VehicleState.b_direccion:
                 self.logger.debug('Try to enable')
                 self.set_enable()
 
             tension = np.interp(self.value, [-1, 1], [self.Steering_Min_Tension, self.Steering_Max_Tension])
-            self.logger.debug(f'Direccion {VehicleState.direccion}  Real {VehicleState.direccion_real}')
+            #self.logger.debug(f'Direccion {VehicleState.direccion}  Real {VehicleState.direccion_real}')
             error = VehicleState.direccion - VehicleState.direccion_real
-            self.logger.debug(f'Send: {error}  abs value: {VehicleState.direccion}')
+            #self.logger.debug(f'Send: {error}  abs value: {VehicleState.direccion}')
+            self.logger.debug(f'Tension {tension}')
             self.communications.CAN2.add_to_queue([
-                make_can_frame(node=self.cobid, index=0x6071, sub_index=0, data=tension)])
+                make_can_frame(node=self.cobid, index=0x6071, sub_index=0, data=int(tension*100))])
         else:
             if VehicleState.b_direccion:
                 self.set_disable()
 
     def set_enable(self):
         self.logger.debug('Sending enable sequence')
-        self.communications.CAN2.add_to_queue([
-            make_can_frame(node=self.cobid, index=0x6040, data=0),
-            make_can_frame(node=self.cobid, index=0x6040, data=6),
-            make_can_frame(node=self.cobid, index=0x6040, data=15)
-        ])
+        if self.communications.CAN2.is_connected():
+            self.communications.CAN2.add_to_queue([
+                make_can_frame(node=self.cobid, index=0x6040, data=0),
+                make_can_frame(node=self.cobid, index=0x6040, data=6),
+                make_can_frame(node=self.cobid, index=0x6040, data=15),
+                make_can_frame(node=self.cobid, index=0x60FE, sub_index=1, data=0x10000)
+            ])
+            VehicleState.b_direccion = True
 
     def init_device(self):
         self.communications.CAN2.add_to_queue([
@@ -69,9 +75,12 @@ class Steering:
         ])
 
     def set_disable(self):
-        self.communications.CAN2.add_to_queue([
-            make_can_frame(node=self.cobid, index=0x6040, data=0X07),
-        ])
+        if self.communications.CAN2.is_connected():
+            self.communications.CAN2.add_to_queue([
+                make_can_frame(node=self.cobid, index=0x60FE, sub_index=1, data=0x0),
+                make_can_frame(node=self.cobid, index=0x6040, data=0X07)
+            ])
+            VehicleState.b_direccion = False
 
     def shutdown(self):
         self.logger.warn('Shutdown')
