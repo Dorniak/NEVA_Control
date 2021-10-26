@@ -40,7 +40,7 @@ gear_decoder = {
 
 def deco_421(data, logger, node):
     try:
-        value = data[3] & 0x1F
+        value = data[4] >> 3
         VehicleState.marcha_real = gear_decoder.get(value, 'N')
         logger.debug(f'Marcha recibida {VehicleState.marcha_real}')
     except Exception as e:
@@ -62,7 +62,7 @@ class CAN:
         self.name = name
         self.logger = get_logger(self.name)
         self.logger.set_level(log_level)
-        self.logger.info(f'Init {name} with {type} {ip}:{port} extended={extend}')
+        self.logger.info(f'Init {name} with {ip}:{port} extended={extend}')
         self.queue = queue.Queue()
         self.node = node
         # self.ip = ip

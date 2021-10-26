@@ -16,15 +16,15 @@ class Steering:
     def __init__(self, cobid, node: Node, communications: Communications, log_level=10):
         self.dev_range = [-400, 400]
         self.shutdown_flag = False
-        self.Steering_Max_Torque = 2000
-        self.Steering_Min_Torque = -2000
+        self.Steering_Max_Torque = 32000
+        self.Steering_Min_Torque = -32000
         self.name = 'Steering'
         self.communications = communications
         self.cobid = cobid
         self.logger = get_logger(self.name)
         self.logger.set_level(log_level)
         self.node = node
-        self.pid = PIDF(kp=0.3, ti=0.2, td=0.1, anti_wind_up=0.4, pro_wind_up=0)
+        self.pid = PIDF(kp=0.1, ti=0.2, td=0.1, anti_wind_up=0.4, pro_wind_up=0)
         self.value = 0
         self.init_device()
         self.timer = self.node.create_timer(0.1, self.sender)
@@ -35,11 +35,14 @@ class Steering:
         while not self.shutdown_flag:
             taN = np.interp(VehicleState.direccion_real, self.dev_range, [-1., 1.])
             caN = np.interp(VehicleState.direccion, self.dev_range, [-1., 1.])
-            self.value = -self.pid.calcValue(target_value=taN, current_value=caN)
+            if VehicleState.b_direccion:
+                self.value = -self.pid.calcValue(target_value=taN, current_value=caN)
+            else:
+                self.pid.reset_values()
             sleep(0.1)
 
     def sender(self):
-        self.logger.debug(f'sender: {VehicleState.b_direccion_request}')
+        # self.logger.debug(f'sender: {VehicleState.b_direccion_request}')
         if VehicleState.b_direccion_request:
             if not VehicleState.b_direccion:
                 self.logger.debug('Try to enable')

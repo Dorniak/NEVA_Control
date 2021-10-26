@@ -13,7 +13,7 @@ class Brake:
 
     def __init__(self, cobid=2, communications: Communications = None, dev_range=None, log_level=10):
         if dev_range is None:
-            dev_range = [0, -100000]
+            dev_range = [0, -110000]
         self.name = 'Brake'
         self.communications = communications
         self.cobid = cobid

@@ -22,6 +22,14 @@ class PIDF(object):
         self._antiWindUp = anti_wind_up
         self._pro_wind_up = pro_wind_up
 
+    def reset_values(self):
+        self.prev_i=0
+        self.prev_d=0
+        self.prev_value = 0
+        self.prev_target = 0
+        self.error = 0
+        self.n = 8.0
+
     def calcValue(self, target_value, current_value, anti_wind_up_change=False, use=(True, True, True)):
         self.error = target_value - current_value
 
