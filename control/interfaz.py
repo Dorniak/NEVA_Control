@@ -55,7 +55,7 @@ class NEVA_GUI(Node):
     def publish_Control(self):
         self.pub_b_volante.publish(Bool(data=self.window.ui.b_volante.isChecked()))
         self.pub_b_velocidad.publish(Bool(data=self.window.ui.b_velocidad.isChecked()))
-        volante = interp(self.window.ui.LateralSlider.value(), (-100, 100), (-430, 430))
+        volante = interp(self.window.ui.LateralSlider.value(), (-100, 100), (-270, 270))
         self.pub_volante.publish(Float64(data=float(volante)))
         self.pub_velocidad.publish(Float64(data=float(self.window.ui.LongitudinalSlider.value())))
 

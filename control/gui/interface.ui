@@ -109,7 +109,7 @@
        <number>0</number>
       </property>
       <property name="maximum">
-       <number>50</number>
+       <number>30</number>
       </property>
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
@@ -126,14 +126,14 @@
      <widget class="QPushButton" name="reset_longitudinal">
       <property name="minimumSize">
        <size>
-        <width>30</width>
+        <width>41</width>
         <height>30</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
-        <width>30</width>
-        <height>30</height>
+        <width>16777215</width>
+        <height>16777215</height>
        </size>
       </property>
       <property name="text">
@@ -279,13 +279,13 @@
      <widget class="QPushButton" name="reset_lateral">
       <property name="minimumSize">
        <size>
-        <width>30</width>
+        <width>62</width>
         <height>30</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
-        <width>30</width>
+        <width>62</width>
         <height>30</height>
        </size>
       </property>
