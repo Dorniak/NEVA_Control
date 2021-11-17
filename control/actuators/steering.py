@@ -64,6 +64,7 @@ class Steering:
         if self.communications.CAN2.is_connected():
             self.communications.CAN2.add_to_queue([
                 make_can_frame(node=self.cobid, index=0x6040, data=0x80),
+                make_can_frame(node=self.cobid, index=0x6060, data=10),  # mode profile torque mode
                 make_can_frame(node=self.cobid, index=0x6040, data=0x6),
                 make_can_frame(node=self.cobid, index=0x6040, data=0xF),
                 make_can_frame(node=self.cobid, index=0x60FE, sub_index=1, data=0x10000)

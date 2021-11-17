@@ -58,9 +58,9 @@ class Brake:
         self.logger.debug(f'{self.name}: Enable')
         self.communications.CAN2.add_to_queue([
             make_can_frame(node=self.cobid, index=0x6040, data=0x0080),
+            make_can_frame(node=self.cobid, index=0x6060, data=0x01),
             make_can_frame(node=self.cobid, index=0x6040, data=0x0006),
-            make_can_frame(node=self.cobid, index=0x6040, data=0x000F),
-            make_can_frame(node=self.cobid, index=0x6060, data=0x01)
+            make_can_frame(node=self.cobid, index=0x6040, data=0x000F)
         ])
 
     def set_disable(self):
