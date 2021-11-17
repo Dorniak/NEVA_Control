@@ -9,7 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+import os
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -379,20 +379,21 @@ class Ui_MainWindow(object):
         self.commandLinkButton.setGeometry(QtCore.QRect(670, 50, 111, 121))
         self.commandLinkButton.setText("")
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("resources/emergency-stop-button.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        path = os.path.dirname(os.path.realpath(__file__))
+        icon.addPixmap(QtGui.QPixmap(path+"/resources/emergency-stop-button.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.commandLinkButton.setIcon(icon)
         self.commandLinkButton.setIconSize(QtCore.QSize(100, 100))
         self.commandLinkButton.setObjectName("commandLinkButton")
         self.label = QtWidgets.QLabel(MainWindow)
         self.label.setGeometry(QtCore.QRect(680, 250, 101, 101))
         self.label.setText("")
-        self.label.setPixmap(QtGui.QPixmap("resources/fem.png"))
+        self.label.setPixmap(QtGui.QPixmap(path+"/resources/fem.png"))
         self.label.setScaledContents(True)
         self.label.setObjectName("label")
         self.label_2 = QtWidgets.QLabel(MainWindow)
         self.label_2.setGeometry(QtCore.QRect(660, 370, 141, 131))
         self.label_2.setText("")
-        self.label_2.setPixmap(QtGui.QPixmap("resources/neva.png"))
+        self.label_2.setPixmap(QtGui.QPixmap(path+"/resources/neva.png"))
         self.label_2.setScaledContents(True)
         self.label_2.setObjectName("label_2")
 
