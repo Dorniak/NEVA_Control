@@ -13,6 +13,7 @@ from neva_msg.msg import Status
 from rclpy.qos import HistoryPolicy
 from std_msgs.msg import Float64, Bool
 from numpy import interp
+from pynput import keyboard
 
 
 class First_window(QMainWindow):
@@ -45,6 +46,26 @@ class NEVA_GUI(Node):
                                                    qos_profile=HistoryPolicy.KEEP_LAST)
 
         self.timer = self.create_timer(1 / 10, self.publish_Control)
+        lis = keyboard.Listener(on_press=self.on_press)
+        lis.start()  # start to listen on a separate thread
+        keyboard.
+
+    def on_press(self, key):
+        try:
+            k = key.char  # single-char keys
+        except:
+            k = key.name  # other keys
+        if key == keyboard.Key.up:
+            self.window.ui.LongitudinalSlider.setValue(max(min(self.window.ui.LongitudinalSlider.value() + 1, self.window.ui.LongitudinalSlider.maximum()), self.window.ui.LongitudinalSlider.minimum()))
+        elif key == keyboard.Key.down:
+            self.window.ui.LongitudinalSlider.setValue(max(min(self.window.ui.LongitudinalSlider.value() - 1, self.window.ui.LongitudinalSlider.maximum()), self.window.ui.LongitudinalSlider.minimum()))
+        elif key == keyboard.Key.right:
+            self.window.ui.LateralSlider.setValue(max(min(self.window.ui.LateralSlider.value() + 5, 100), -100))
+        elif key == keyboard.Key.left:
+            self.window.ui.LateralSlider.setValue(max(min(self.window.ui.LateralSlider.value() - 5, 100), -100))
+        elif key == keyboard.Key.space:
+            self.window.ui.LongitudinalSlider.setValue(0)
+            self.window.ui.LateralSlider.setValue(0)
 
     def reset_volante(self):
         self.window.ui.LateralSlider.setValue(0)
