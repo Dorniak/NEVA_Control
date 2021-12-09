@@ -48,7 +48,6 @@ class NEVA_GUI(Node):
         self.timer = self.create_timer(1 / 10, self.publish_Control)
         lis = keyboard.Listener(on_press=self.on_press)
         lis.start()  # start to listen on a separate thread
-        keyboard.
 
     def on_press(self, key):
         try:
@@ -66,6 +65,8 @@ class NEVA_GUI(Node):
         elif key == keyboard.Key.space:
             self.window.ui.LongitudinalSlider.setValue(0)
             self.window.ui.LateralSlider.setValue(0)
+            self.window.ui.b_volante.setChecked(False)
+            self.window.ui.b_velocidad.setChecked(False)
 
     def reset_volante(self):
         self.window.ui.LateralSlider.setValue(0)
