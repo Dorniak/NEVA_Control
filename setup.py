@@ -14,7 +14,7 @@ setup(
         ('share/{}'.format(package_name), glob('launch/*.launch.py')),
         ('share/conf/', glob('conf/*'))
     ],
-    install_requires=['setuptools', 'PyYAML', 'numpy'],
+    install_requires=['setuptools', 'PyYAML', 'numpy', 'pynput'],
     zip_safe=True,
     maintainer='',
     maintainer_email='',

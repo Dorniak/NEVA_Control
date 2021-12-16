@@ -1,3 +1,7 @@
+interface:
+  Status_Interface:
+    ros__parameters:
+      brake_range: [-500,500]
 control:
   NEVA_Control:
     ros__parameters:

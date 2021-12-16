@@ -32,6 +32,7 @@ class NEVA_GUI(Node):
         self.window.ui.id.setText('NEVA')
         self.window.ui.reset_lateral.clicked.connect(self.reset_volante)
         self.window.ui.reset_longitudinal.clicked.connect(self.reset_velocidad)
+        self.brake_range = self.get_parameter('brake_range').value
 
         self.sub = self.create_subscription(Status, '/NEVA/status', self.subscriber_status,
                                             qos_profile=HistoryPolicy.KEEP_LAST)
@@ -46,8 +47,8 @@ class NEVA_GUI(Node):
                                                    qos_profile=HistoryPolicy.KEEP_LAST)
 
         self.timer = self.create_timer(1 / 10, self.publish_Control)
-        lis = keyboard.Listener(on_press=self.on_press)
-        lis.start()  # start to listen on a separate thread
+        self.lis = keyboard.Listener(on_press=self.on_press)
+        self.lis.start()  # start to listen on a separate thread
 
     def on_press(self, key):
         try:
@@ -66,7 +67,6 @@ class NEVA_GUI(Node):
             self.window.ui.LongitudinalSlider.setValue(0)
             self.window.ui.LateralSlider.setValue(0)
             self.window.ui.b_volante.setChecked(False)
-            self.window.ui.b_velocidad.setChecked(False)
 
     def reset_volante(self):
         self.window.ui.LateralSlider.setValue(0)
@@ -77,7 +77,7 @@ class NEVA_GUI(Node):
     def publish_Control(self):
         self.pub_b_volante.publish(Bool(data=self.window.ui.b_volante.isChecked()))
         self.pub_b_velocidad.publish(Bool(data=self.window.ui.b_velocidad.isChecked()))
-        volante = interp(self.window.ui.LateralSlider.value(), (-100, 100), (-270, 270))
+        volante = interp(self.window.ui.LateralSlider.value(), (-100, 100), (self.brake_range[0], self.brake_range[1]))
         self.pub_volante.publish(Float64(data=float(volante)))
         self.pub_velocidad.publish(Float64(data=float(self.window.ui.LongitudinalSlider.value())))
 
