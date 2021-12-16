@@ -1,19 +1,16 @@
 import sys
-from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow
-
-from control.gui.gui_interface import Ui_MainWindow
-
-import rclpy
-from rclpy.node import Node
-
 import threading
 
+import rclpy
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QMainWindow
 from neva_msg.msg import Status
+from numpy import interp
+from rclpy.node import Node
 from rclpy.qos import HistoryPolicy
 from std_msgs.msg import Float64, Bool
-from numpy import interp
-from pynput import keyboard
+
+from control.gui.gui_interface import Ui_MainWindow
 
 
 class First_window(QMainWindow):
@@ -24,7 +21,7 @@ class First_window(QMainWindow):
 
 
 class NEVA_GUI(Node):
-    def __init__(self, mainwindow=None, name: str = 'Unknown Interface'):
+    def __init__(self, mainwindow: QMainWindow=None, name: str = 'Unknown Interface'):
         super().__init__(node_name=name, namespace='interface', start_parameter_services=True,
                          allow_undeclared_parameters=False, automatically_declare_parameters_from_overrides=True)
 
@@ -47,23 +44,22 @@ class NEVA_GUI(Node):
                                                    qos_profile=HistoryPolicy.KEEP_LAST)
 
         self.timer = self.create_timer(1 / 10, self.publish_Control)
-        self.lis = keyboard.Listener(on_press=self.on_press)
-        self.lis.start()  # start to listen on a separate thread
+        self.window.keyPressEvent = self.keyPressEvent
 
-    def on_press(self, key):
-        try:
-            k = key.char  # single-char keys
-        except:
-            k = key.name  # other keys
-        if key == keyboard.Key.up:
-            self.window.ui.LongitudinalSlider.setValue(max(min(self.window.ui.LongitudinalSlider.value() + 1, self.window.ui.LongitudinalSlider.maximum()), self.window.ui.LongitudinalSlider.minimum()))
-        elif key == keyboard.Key.down:
-            self.window.ui.LongitudinalSlider.setValue(max(min(self.window.ui.LongitudinalSlider.value() - 1, self.window.ui.LongitudinalSlider.maximum()), self.window.ui.LongitudinalSlider.minimum()))
-        elif key == keyboard.Key.right:
+    def keyPressEvent(self, event: QtGui.QKeyEvent) -> None:
+        if event.key() == QtCore.Qt.Key_Up:
+            self.window.ui.LongitudinalSlider.setValue(
+                max(min(self.window.ui.LongitudinalSlider.value() + 1, self.window.ui.LongitudinalSlider.maximum()),
+                    self.window.ui.LongitudinalSlider.minimum()))
+        elif event.key() == QtCore.Qt.Key_Down:
+            self.window.ui.LongitudinalSlider.setValue(
+                max(min(self.window.ui.LongitudinalSlider.value() - 1, self.window.ui.LongitudinalSlider.maximum()),
+                    self.window.ui.LongitudinalSlider.minimum()))
+        elif event.key() == QtCore.Qt.Key_Right:
             self.window.ui.LateralSlider.setValue(max(min(self.window.ui.LateralSlider.value() + 5, 100), -100))
-        elif key == keyboard.Key.left:
+        elif event.key() == QtCore.Qt.Key_Left:
             self.window.ui.LateralSlider.setValue(max(min(self.window.ui.LateralSlider.value() - 5, 100), -100))
-        elif key == keyboard.Key.space:
+        elif event.key() == QtCore.Qt.Key_Space:
             self.window.ui.LongitudinalSlider.setValue(0)
             self.window.ui.LateralSlider.setValue(0)
             self.window.ui.b_volante.setChecked(False)
