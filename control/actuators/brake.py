@@ -1,6 +1,7 @@
 import threading
 from time import sleep
 from numpy import interp
+from rclpy.node import Node
 
 from rclpy.logging import get_logger
 
@@ -11,10 +12,11 @@ from control.devices.communications import Communications
 
 class Brake:
 
-    def __init__(self, cobid=2, communications: Communications = None, dev_range=None, log_level=10):
+    def __init__(self, cobid=2, node: Node = None, communications: Communications = None, dev_range=None, log_level=10):
         if dev_range is None:
             dev_range = [0, -110000]
         self.name = 'Brake'
+        self.node = node
         self.communications = communications
         self.cobid = cobid
         self.device_range = dev_range
@@ -22,6 +24,12 @@ class Brake:
         self.logger = get_logger(self.name)
         self.logger.set_level(log_level)
         self.shutdown = False
+        self.timer = self.node.create_timer(0.5, self.get_status)
+
+    def get_status(self):
+        self.communications.CAN2.add_to_queue([
+            make_can_frame(node=self.cobid, index=0x6041, write=False),
+        ])
 
     def set_pedal_pressure(self, press):
         if VehicleState.b_velocidad_request:

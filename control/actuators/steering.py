@@ -28,8 +28,14 @@ class Steering:
         self.value = 0
         self.init_device()
         self.timer = self.node.create_timer(0.1, self.sender)
+        self.timer = self.node.create_timer(0.5, self.get_status)
         self.timer_pid = threading.Thread(target=self.pid_timer, daemon=False)
         self.timer_pid.start()
+
+    def get_status(self):
+        self.communications.CAN2.add_to_queue([
+            make_can_frame(node=self.cobid, index=0x6041, write=False),
+        ])
 
     def pid_timer(self):
         while not self.shutdown_flag:

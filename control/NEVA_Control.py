@@ -88,7 +88,7 @@ class Control(Node):
         params = self.get_parameters_by_prefix('brake')
         if params['on'].value:
             self.logger.info('Configuring brake device')
-            self.brake = Brake(cobid=params['cobid'].value, communications=self.comunications,
+            self.brake = Brake(cobid=params['cobid'].value, node=self, communications=self.comunications,
                                log_level=params['log_level'].value)
             # self.brake.calibrate()
         else:

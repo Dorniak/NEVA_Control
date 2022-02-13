@@ -47,6 +47,34 @@ def deco_421(data, logger, node):
         print(f'Exception decoding gear {e}')
 
 
+def deco_581(data, logger, node):
+    try:
+        index = unpack('<H', data[5:7])
+        if index == 0x6041:
+            status = unpack('<H', data[8:10])
+            if status == 0x27 or status == 0x07:
+                VehicleState.status_brake = True
+            else:
+                VehicleState.status_brake = False
+        logger.debug(f'Status brake {VehicleState.status_brake}')
+    except Exception as e:
+        print(f'Exception status brake {e}')
+
+
+def deco_582(data, logger, node):
+    try:
+        index = unpack('<H', data[5:7])
+        if index == 0x6041:
+            status = unpack('<H', data[8:10])
+            if status == 0x27 or status == 0x07:
+                VehicleState.status_steering = True
+            else:
+                VehicleState.status_steering = False
+        logger.debug(f'Status brake {VehicleState.status_steering}')
+    except Exception as e:
+        print(f'Exception status steering {e}')
+
+
 dict_decoder = {  # 0x581: deco_581,
     0x002: deco_002,
     0x1CB: deco_1CB,
