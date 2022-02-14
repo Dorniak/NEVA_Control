@@ -1,0 +1,5 @@
+PyQt5==5.15.4
+matplotlib==3.5.1
+opencv-python-headless==4.5.5.62
+numpy==1.21.5
+PyQtWebEngine==5.15.5

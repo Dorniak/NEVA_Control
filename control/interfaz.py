@@ -10,23 +10,18 @@ from rclpy.node import Node
 from rclpy.qos import HistoryPolicy
 from std_msgs.msg import Float64, Bool
 
-from control.gui.gui_interface import Ui_MainWindow
-
-
-class First_window(QMainWindow):
-    def __init__(self, parent=None):
-        super(First_window, self).__init__(parent)
-        self.ui = Ui_MainWindow()
-        self.ui.setupUi(self)
+from control.gui.gui_interface import MainWindow, prueba
 
 
 class NEVA_GUI(Node):
-    def __init__(self, mainwindow: QMainWindow=None, name: str = 'Unknown Interface'):
+    def __init__(self, mainwindow=None, name: str = 'Unknown Interface'):
         super().__init__(node_name=name, namespace='interface', start_parameter_services=True,
                          allow_undeclared_parameters=False, automatically_declare_parameters_from_overrides=True)
-
+        signals = prueba()
         self.window = mainwindow
         self.window.ui.id.setText('NEVA')
+        signals.end.connect(self.window.SystemWindow.SystemVerifRadioBtnWindow.on_ping_youtube)
+        signals.end.emit('youtube is up')
         self.window.ui.reset_lateral.clicked.connect(self.reset_volante)
         self.window.ui.reset_longitudinal.clicked.connect(self.reset_velocidad)
         self.brake_range = self.get_parameter('brake_range').value
@@ -108,7 +103,8 @@ def startthread(node):
 def main(args=None):
     rclpy.init(args=args)
     app = QtWidgets.QApplication(sys.argv)
-    gui = First_window()
+    gui = MainWindow()
+    gui.showMaximized()
     node = NEVA_GUI(mainwindow=gui, name='Status_Interface')
     gui.show()
     spin = threading.Thread(target=startthread, kwargs=dict(node=node), daemon=True, name='Thread publisher')
