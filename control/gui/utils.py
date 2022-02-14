@@ -13,10 +13,10 @@ import numpy as np
 import random
 import time
 import os
-import getlidarMain
-import LidarConfig1
-import filtBy
-import sqlite3
+# import getlidarMain
+# import LidarConfig1
+# import filtBy
+# import sqlite3
 
 class StreamViewerThread(QThread):
     give_me_frame = pyqtSignal(object)
@@ -61,7 +61,7 @@ class MplCanvas(FigureCanvas):
 
     def __init__(self, parent=None, dpi=100, width=None, height=None):
         self.fig = Figure(figsize=(width, height), dpi=dpi) #,facecolor='black'
-        self.axes = self.fig.add_subplot(111, projection='3d')
+        self.axes = self.fig.add_subplot(111)#, projection='3d') #TODO: No funciona usar projection 3d
         super(MplCanvas, self).__init__(self.fig)
 
 class GraphThread(QThread):

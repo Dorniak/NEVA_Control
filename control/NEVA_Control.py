@@ -160,6 +160,10 @@ class Control(Node):
 
                 parada_emergencia_request=VehicleState.parada_emergencia_request,
                 parada_emergencia=VehicleState.parada_emergencia,
+
+                CAN_connected=self.comunications.CAN2.is_connected(),
+                brake_enabled=VehicleState.status_brake,
+                steering_enabled=VehicleState.status_steering,
             )
         )
 
