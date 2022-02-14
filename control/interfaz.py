@@ -22,8 +22,8 @@ class NEVA_GUI(Node):
         self.window.ui.id.setText('NEVA')
         signals.end.connect(self.window.SystemWindow.SystemVerifRadioBtnWindow.on_ping_youtube)
         signals.end.emit('youtube is up')
-        self.window.ui.reset_lateral.clicked.connect(self.reset_volante)
-        self.window.ui.reset_longitudinal.clicked.connect(self.reset_velocidad)
+        # self.window.ui.reset_lateral.clicked.connect(self.reset_volante)
+        # self.window.ui.reset_longitudinal.clicked.connect(self.reset_velocidad)
         self.brake_range = self.get_parameter('brake_range').value
 
         self.sub = self.create_subscription(Status, '/NEVA/status', self.subscriber_status,
@@ -38,8 +38,8 @@ class NEVA_GUI(Node):
         self.pub_velocidad = self.create_publisher(msg_type=Float64, topic='/NEVA/velocidad',
                                                    qos_profile=HistoryPolicy.KEEP_LAST)
 
-        self.timer = self.create_timer(1 / 10, self.publish_Control)
-        self.window.keyPressEvent = self.keyPressEvent
+        # self.timer = self.create_timer(1 / 10, self.publish_Control)
+        # self.window.keyPressEvent = self.keyPressEvent
 
     def keyPressEvent(self, event: QtGui.QKeyEvent) -> None:
         if event.key() == QtCore.Qt.Key_Up:
