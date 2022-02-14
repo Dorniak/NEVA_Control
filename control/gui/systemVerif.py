@@ -12,6 +12,7 @@ from control.gui.utils import (
     GmailPingThread, youtubePingThread,
     FacebookPingThread
 )
+from os import path
 
 
 class SystemVerifRadioBtnWindow(QWidget):
@@ -335,7 +336,8 @@ class ShowNevaImageWidget(QWidget):
         self.layout = QGridLayout(self)
         self.BackBtn = QPushButton(self)
         self.BackBtn.setStyleSheet("background-color : white; border: none;")
-        self.BackBtn.setIcon(QtGui.QIcon('./resources/resetbtn.png'))
+        path_resetbtn = path.dirname(path.realpath(__file__))
+        self.BackBtn.setIcon(QtGui.QIcon(path_resetbtn+'/resources/resetbtn.png'))
         self.BackBtn.setIconSize(QtCore.QSize(80, 80))
         self.layout.addWidget(self.BackBtn, 1, 1)
 
@@ -348,7 +350,8 @@ class ShowNevaLogoWidget(QWidget):
     def SetupUI(self):
         self.layout = QGridLayout(self)
         self.Logo = QLabel(self)
-        pixmap = QtGui.QPixmap('./resources/Neva2.png')
+        path_neva2 = path.dirname(path.realpath(__file__))
+        pixmap = QtGui.QPixmap(path_neva2 + '/resources/Neva2.png')
         self.Logo.setPixmap(pixmap)
         self.Logo.setAlignment(QtCore.Qt.AlignCenter)
         self.layout.addWidget(self.Logo, 0, 0, 1, 1)
