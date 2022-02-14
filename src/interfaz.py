@@ -10,7 +10,7 @@ from rclpy.node import Node
 from rclpy.qos import HistoryPolicy
 from std_msgs.msg import Float64, Bool
 
-from control.gui.gui_interface import MainWindow, signals
+from src.gui.gui_interface import MainWindow, signals
 
 
 class NEVA_GUI(Node):

@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import (
     QLineEdit, QShortcut
 )
 from PyQt5.QtCore import Qt
-from control.gui.utils import (
+from src.gui.utils import (
     Slider, GooglePingThread,
     MessageDialog, YahooPingThread,
     GmailPingThread, youtubePingThread,

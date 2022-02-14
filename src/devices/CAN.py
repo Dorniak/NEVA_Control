@@ -5,8 +5,8 @@ import time
 from rclpy.node import Node
 from rclpy.logging import get_logger
 
-from control.devices.base import VehicleState
-from control.devices.connection import Connection
+from src.devices.base import VehicleState
+from src.devices.connection import Connection
 from struct import unpack
 
 

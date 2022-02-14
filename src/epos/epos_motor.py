@@ -1,11 +1,11 @@
-from control.can_utils.common import make_can_frame
+from src.can_utils.common import make_can_frame
 from enum import IntEnum
 import struct
 from typing import Tuple
 from time import time
 
 # QC_FACTOR = 402000 / 360
-#from control.devices.base import VehicleState
+#from src.devices.base import VehicleState
 
 QC_FACTOR = 1  # 625000 / 360
 DIGITAL_OUTPUT_3 = False

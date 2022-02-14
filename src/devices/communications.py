@@ -1,4 +1,4 @@
-from control.devices.CAN import CAN
+from src.devices.CAN import CAN
 
 
 class Communications:

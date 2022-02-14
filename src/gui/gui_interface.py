@@ -10,7 +10,7 @@ from PyQt5 import (QtCore, QtGui,
                    )
 from matplotlib.mlab import window_none
 
-from control.gui.systemVerif import (
+from src.gui.systemVerif import (
     SystemVerifRadioBtnWindow,
     SystemNevaWindow,
     ShowNevaImageWidget,
@@ -26,7 +26,7 @@ from PyQt5.QtCore import QThread, pyqtSignal, Qt
     MplCanvas, GraphThread, AcquisitionThread
     )
  """
-from control.gui.utils import (
+from src.gui.utils import (
     StreamViewerThread, MessageDialog,
     MplCanvas, GraphThread
 )

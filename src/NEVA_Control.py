@@ -1,12 +1,12 @@
 from traceback import format_exc
 
-from control.devices.base import VehicleState
-from control.actuators.brake import Brake
-from control.actuators.steering import Steering
-from control.actuators.throttle import Throttle
-from control.devices.communications import Communications
-from control.devices.CAN import CAN
-from control.devices.pid import PID
+from src.devices.base import VehicleState
+from src.actuators.brake import Brake
+from src.actuators.steering import Steering
+from src.actuators.throttle import Throttle
+from src.devices.communications import Communications
+from src.devices.CAN import CAN
+from src.devices.pid import PID
 
 import rclpy
 from rclpy.node import Node

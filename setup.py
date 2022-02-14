@@ -6,7 +6,7 @@ package_name = 'NEVA_control'
 setup(
     name=package_name,
     version='0.0.0',
-    packages=['control'],
+    packages=['src'],
     data_files=[
         ('share/ament_index/resource_index/packages',
          ['resource/' + package_name]),
@@ -23,8 +23,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'control = control.NEVA_Control:main',
-            'interfaz = control.interfaz:main',
+            'control = src.NEVA_Control:main',
+            'interfaz = src.interfaz:main',
         ],
     },
 )

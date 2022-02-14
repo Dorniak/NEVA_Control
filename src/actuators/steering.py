@@ -3,10 +3,10 @@ import threading
 from rclpy.node import Node
 from rclpy.logging import get_logger
 
-from control.can_utils.common import make_can_frame
-from control.devices.base import VehicleState
-from control.devices.communications import Communications
-from control.devices.pid import PIDF
+from src.can_utils.common import make_can_frame
+from src.devices.base import VehicleState
+from src.devices.communications import Communications
+from src.devices.pid import PIDF
 import numpy as np
 from time import sleep
 
