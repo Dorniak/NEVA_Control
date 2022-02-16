@@ -1,9 +1,9 @@
 from PyQt5.QtWidgets import (
-    QSlider, QStyleOptionSlider, 
-    QStyle, QLabel, 
-    QDialog, QGridLayout, 
+    QSlider, QStyleOptionSlider,
+    QStyle, QLabel,
+    QDialog, QGridLayout,
     QSizePolicy
-    )
+)
 from PyQt5.QtCore import QThread, pyqtSignal, Qt
 import urllib.request
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -13,6 +13,8 @@ import numpy as np
 import random
 import time
 import os
+
+
 # import getlidarMain
 # import LidarConfig1
 # import filtBy
@@ -23,11 +25,11 @@ class StreamViewerThread(QThread):
     stream_not_found = pyqtSignal(str)
     end = pyqtSignal(str)
 
-    def __init__(self,parent):
+    def __init__(self, parent):
         super().__init__()
         self.parent = parent
         self.running = True
-        
+
     def run(self):
         try:
             self.running = True
@@ -49,8 +51,8 @@ class StreamViewerThread(QThread):
             a = bytes.find(b'\xff\xd8')
             b = bytes.find(b'\xff\xd9')
             if a != -1 and b != -1:
-                jpg = bytes[a:b+2]
-                bytes = bytes[b+2:]
+                jpg = bytes[a:b + 2]
+                bytes = bytes[b + 2:]
                 self.give_me_frame.emit(jpg)
 
     def stop(self):
@@ -60,14 +62,15 @@ class StreamViewerThread(QThread):
 class MplCanvas(FigureCanvas):
 
     def __init__(self, parent=None, dpi=100, width=None, height=None):
-        self.fig = Figure(figsize=(width, height), dpi=dpi) #,facecolor='black'
-        self.axes = self.fig.add_subplot(111)#, projection='3d') #TODO: No funciona usar projection 3d
+        self.fig = Figure(figsize=(width, height), dpi=dpi)  # ,facecolor='black'
+        self.axes = self.fig.add_subplot(111)  # , projection='3d') #TODO: No funciona usar projection 3d
         super(MplCanvas, self).__init__(self.fig)
+
 
 class GraphThread(QThread):
     end = pyqtSignal(str)
 
-    def __init__(self,parent):
+    def __init__(self, parent):
         super().__init__()
         self.parent = parent
         self.running = True
@@ -76,10 +79,10 @@ class GraphThread(QThread):
         self.ydata = [random.randint(0, 10) for i in range(n_data)]
         self.zdata = self.ydata
         self.cdata = 'r'
-        #print('Llego hasta este punto(5)')
-        #print(self.parent.parent)
-        #print(self.parent.parent.AcquisitionModule.res[0,1:])
-        #print(self.parent.parent.res[0,1:])
+        # print('Llego hasta este punto(5)')
+        # print(self.parent.parent)
+        # print(self.parent.parent.AcquisitionModule.res[0,1:])
+        # print(self.parent.parent.res[0,1:])
 
     def run(self):
         while self.running:
@@ -89,10 +92,10 @@ class GraphThread(QThread):
     def update_plot(self):
         # Drop off the first y element, append a new one.
         self.ydata = self.ydata[1:] + [random.randint(0, 10)]
-        #self.xdata = self.parent.parent.AcquisitionModule.res[0,1:]
-        #self.ydata = self.parent.parent.AcquisitionModule.res[1,1:]
-        #self.zdata = self.parent.parent.AcquisitionModule.res[2,1:]
-        #self.cdata = self.parent.parent.AcquisitionModule.res[3,1:]
+        # self.xdata = self.parent.parent.AcquisitionModule.res[0,1:]
+        # self.ydata = self.parent.parent.AcquisitionModule.res[1,1:]
+        # self.zdata = self.parent.parent.AcquisitionModule.res[2,1:]
+        # self.cdata = self.parent.parent.AcquisitionModule.res[3,1:]
         self.parent.canvas.axes.cla()  # Clear the canvas.
         self.parent.canvas.axes.plot(self.xdata, self.ydata, self.zdata, self.cdata)
         # Trigger the canvas to update and redraw.
@@ -100,6 +103,7 @@ class GraphThread(QThread):
 
     def stop(self):
         self.running = False
+
 
 """ class AcquisitionThread(QThread):
     end = pyqtSignal(str)
@@ -160,9 +164,11 @@ class GraphThread(QThread):
     def stop(self):
         self.running = False
  """
- 
+
+
 class Slider(QSlider):
     val = 0
+
     def mousePressEvent(self, event):
         super(Slider, self).mousePressEvent(event)
         if event.button() == Qt.LeftButton:
@@ -186,13 +192,13 @@ class Slider(QSlider):
         pr = pos - sr.center() + sr.topLeft()
         p = pr.x() if self.orientation() == Qt.Horizontal else pr.y()
         return QStyle.sliderValueFromPosition(self.minimum(), self.maximum(), p - sliderMin,
-                                               sliderMax - sliderMin, opt.upsideDown)
+                                              sliderMax - sliderMin, opt.upsideDown)
 
 
 class MessageDialog(QDialog):
-    def __init__(self,parent,msg):
+    def __init__(self, parent, msg):
         super().__init__(parent)
-        self.parent=parent
+        self.parent = parent
         self.msg = msg
         self.resize(600, 200)
         self.setStyleSheet('background-color: rgb(41, 36, 36)')
@@ -206,41 +212,33 @@ class MessageDialog(QDialog):
 
         self.layout = QGridLayout(self)
 
-        self.text = QLabel(self.msg,self)
+        self.text = QLabel(self.msg, self)
         self.text.setStyleSheet("font-size:16px;color:white")
 
-        self.layout.addWidget(self.vpdbackground,0,0,20,20)
-        self.layout.addWidget(self.text,6,5,2,10)
+        self.layout.addWidget(self.vpdbackground, 0, 0, 20, 20)
+        self.layout.addWidget(self.text, 6, 5, 2, 10)
         self.setLayout(self.layout)
 
 
+class PingBoard5(QThread):
+    end = pyqtSignal(bool)
 
-class GooglePingThread(QThread):
-    end = pyqtSignal(str)
-
-    def __init__(self,parent):
+    def __init__(self, parent):
         super().__init__()
 
         self.parent = parent
 
         self.running = True
-        self.hostname = "google.com" #example
-        self.count = 0
+        self.hostname = "192.168.0.5"  # example
 
-        
     def run(self):
         while self.running:
             response = os.system("ping -c 1 " + self.hostname)
             if response == 0:
-                status = 'google is up'
-                self.count +=1
+                status = True
+                self.count += 1
             else:
-                status = 'google is down'
-            
-            # for test 
-            if self.count > 2:
-                self.running = False
-                status = 'google is down'
+                status = False
             self.end.emit(status)
             time.sleep(1)
 
@@ -248,32 +246,25 @@ class GooglePingThread(QThread):
         self.running = False
 
 
-class YahooPingThread(QThread):
-    end = pyqtSignal(str)
+class PingBoard6(QThread):
+    end = pyqtSignal(bool)
 
-    def __init__(self,parent):
+    def __init__(self, parent):
         super().__init__()
 
         self.parent = parent
 
         self.running = True
-        self.hostname = "yahoo.com" #example
-        self.count = 0
+        self.hostname = "192.168.0.6"  # example
 
-        
     def run(self):
         while self.running:
             response = os.system("ping -c 1 " + self.hostname)
             if response == 0:
-                status = 'yahoo is up'
-                self.count +=1
+                status = True
+                self.count += 1
             else:
-                status = 'yahoo is down'
-            
-            # for test 
-            if self.count > 2:
-                self.running = False
-                status = 'yahoo is down'
+                status = False
             self.end.emit(status)
             time.sleep(1)
 
@@ -281,96 +272,25 @@ class YahooPingThread(QThread):
         self.running = False
 
 
-class GmailPingThread(QThread):
-    end = pyqtSignal(str)
+class PingBoard7(QThread):
+    end = pyqtSignal(bool)
 
-    def __init__(self,parent):
+    def __init__(self, parent):
         super().__init__()
 
         self.parent = parent
 
         self.running = True
-        self.hostname = "gmail.com" #example
-        self.count = 0
+        self.hostname = "192.168.0.7"  # example
 
-        
     def run(self):
         while self.running:
             response = os.system("ping -c 1 " + self.hostname)
             if response == 0:
-                status = 'gmail is up'
-                self.count +=1
+                status = True
+                self.count += 1
             else:
-                status = 'gmail is down'
-            
-            # for test 
-            if self.count > 2:
-                self.running = False
-                status = 'gmail is down'
-            self.end.emit(status)
-            time.sleep(1)
-
-    def stop(self):
-        self.running = False
-
-class youtubePingThread(QThread):
-    end = pyqtSignal(str)
-
-    def __init__(self,parent):
-        super().__init__()
-
-        self.parent = parent
-
-        self.running = True
-        self.hostname = "youtube.com" #example
-        self.count = 0
-
-        
-    def run(self):
-        while self.running:
-            response = os.system("ping -n 1 " + self.hostname)
-            if response == 0:
-                status = 'youtube is up'
-                self.count +=1
-            else:
-                status = 'youtube is down'
-            
-            # for test 
-            if self.count > 2:
-                self.running = False
-                status = 'youtube is down'
-            self.end.emit(status)
-            time.sleep(1)
-
-    def stop(self):
-        self.running = False
-
-class FacebookPingThread(QThread):
-    end = pyqtSignal(str)
-
-    def __init__(self,parent):
-        super().__init__()
-
-        self.parent = parent
-
-        self.running = True
-        self.hostname = "facebook.com" #example
-        self.count = 0
-
-        
-    def run(self):
-        while self.running:
-            response = os.system("ping -c 1 " + self.hostname)
-            if response == 0:
-                status = 'facebook is up'
-                self.count +=1
-            else:
-                status = 'facebook is down'
-            
-            # for test 
-            if self.count > 2:
-                self.running = False
-                status = 'facebook is down'
+                status = False
             self.end.emit(status)
             time.sleep(1)
 

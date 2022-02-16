@@ -1,18 +1,17 @@
+from os import path
+
 from PyQt5 import QtCore, QtGui
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QWidget, QGridLayout,
     QPushButton, QLabel,
-    QCheckBox, QRadioButton,
-    QLineEdit, QShortcut
+    QCheckBox, QLineEdit, QShortcut
 )
-from PyQt5.QtCore import Qt
+
 from src.gui.utils import (
-    Slider, GooglePingThread,
-    MessageDialog, YahooPingThread,
-    GmailPingThread, youtubePingThread,
-    FacebookPingThread
+    Slider, PingBoard5,
+    PingBoard6, PingBoard7
 )
-from os import path
 
 
 class SystemVerifRadioBtnWindow(QWidget):
@@ -55,30 +54,20 @@ class SystemVerifRadioBtnWindow(QWidget):
         self.CAN_color_label.setStyleSheet(
             "border: 1px solid black;border-radius: 10px; min-height: 18px;min-width: 18px;background-color: red")
 
-        self.GooglePingThread = GooglePingThread(self)
-        self.GooglePingThread.end.connect(self.on_ping_google)
-        self.GooglePingThread.running = True
-        self.GooglePingThread.start()
+        self.PingBoard5 = PingBoard5(self)
+        self.PingBoard5.end.connect(self.on_ping_board5)
+        self.PingBoard5.running = True
+        self.PingBoard5.start()
 
-        # self.YoutubePingThread = youtubePingThread(self)
-        # self.YoutubePingThread.end.connect(self.on_ping_youtube)
-        # self.YoutubePingThread.running = True
-        # self.YoutubePingThread.start()
+        self.PingBoard6 = PingBoard6(self)
+        self.PingBoard6.end.connect(self.on_ping_board6)
+        self.PingBoard6.running = True
+        self.PingBoard6.start()
 
-        self.FacebookPingThread = FacebookPingThread(self)
-        self.FacebookPingThread.end.connect(self.on_ping_facebook)
-        self.FacebookPingThread.running = True
-        self.FacebookPingThread.start()
-
-        self.GmailPingThread = GmailPingThread(self)
-        self.GmailPingThread.end.connect(self.on_ping_gmail)
-        self.GmailPingThread.running = True
-        self.GmailPingThread.start()
-
-        # self.YahooPingThread = YahooPingThread(self)
-        # self.YahooPingThread.end.connect(self.callback_CAN_signal)
-        # self.YahooPingThread.running = True
-        # self.YahooPingThread.start()
+        self.PingBoard7 = PingBoard7(self)
+        self.PingBoard7.end.connect(self.on_ping_board7)
+        self.PingBoard7.running = True
+        self.PingBoard7.start()
 
         self.Board5_label = QLabel('Board 5', self)
         self.Board6_label = QLabel('Board 6', self)
@@ -99,27 +88,27 @@ class SystemVerifRadioBtnWindow(QWidget):
         self.layout.addWidget(self.CAN_color_label, 16, 1)
         self.layout.addWidget(self.CAN_label, 16, 2)
 
-    def on_ping_google(self, status):
-        if status == 'google is up':
+    def on_ping_board5(self, status):
+        if status:
             self.Board5_color_label.setStyleSheet(
                 "border: 1px solid black;border-radius: 10px; min-height: 18px;min-width: 18px;background-color: green")
-        if status == 'google is down':
+        else:
             self.Board5_color_label.setStyleSheet(
                 "border: 1px solid black;border-radius: 10px; min-height: 18px;min-width: 18px;background-color: red")
 
-    def on_ping_gmail(self, status):
-        if status == 'gmail is up':
+    def on_ping_board6(self, status):
+        if status:
             self.Board6_color_label.setStyleSheet(
                 "border: 1px solid black;border-radius: 10px; min-height: 18px;min-width: 18px;background-color: green")
-        if status == 'gmail is down':
+        else:
             self.Board6_color_label.setStyleSheet(
                 "border: 1px solid black;border-radius: 10px; min-height: 18px;min-width: 18px;background-color: red")
 
-    def on_ping_facebook(self, status):
-        if status == 'facebook is up':
+    def on_ping_board7(self, status):
+        if status:
             self.Board7_color_label.setStyleSheet(
                 "border: 1px solid black;border-radius: 10px; min-height: 18px;min-width: 18px;background-color: green")
-        if status == 'facebook is down':
+        else:
             self.Board7_color_label.setStyleSheet(
                 "border: 1px solid black;border-radius: 10px; min-height: 18px;min-width: 18px;background-color: red")
 
@@ -337,7 +326,7 @@ class ShowNevaImageWidget(QWidget):
         self.BackBtn = QPushButton(self)
         self.BackBtn.setStyleSheet("background-color : white; border: none;")
         path_resetbtn = path.dirname(path.realpath(__file__))
-        self.BackBtn.setIcon(QtGui.QIcon(path_resetbtn+'/resources/resetbtn.png'))
+        self.BackBtn.setIcon(QtGui.QIcon(path_resetbtn + '/resources/resetbtn.png'))
         self.BackBtn.setIconSize(QtCore.QSize(80, 80))
         self.layout.addWidget(self.BackBtn, 1, 1)
 
@@ -377,7 +366,7 @@ class SystemNevaWindow(QWidget):
         self.checkbox_Volante.setStyleSheet("QCheckBox"
                                             "{spacing : 20px; color: black; font-size:18px; font-family: Arial};"
                                             "QCheckBox::indicator { width: 25px; height: 25px; spacing : 20px};")
-        self.checkbox_Volante.setChecked(True)
+        self.checkbox_Volante.setChecked(False)
 
         self.VolanteSlider = Slider(QtCore.Qt.Horizontal, self)
         self.VolanteSlider.setRange(-540, 540)
@@ -417,7 +406,7 @@ class SystemNevaWindow(QWidget):
         self.checkbox_Velocidad.setStyleSheet("QCheckBox"
                                               "{spacing : 20px; color: black; font-size:18px; font-family: Arial};"
                                               "QCheckBox::indicator { width: 25px; height: 25px; spacing : 20px};")
-        self.checkbox_Velocidad.setChecked(True)
+        self.checkbox_Velocidad.setChecked(False)
 
         self.VelocidadSlider = Slider(QtCore.Qt.Horizontal, self)
         self.VelocidadSlider.setRange(0, 100)
