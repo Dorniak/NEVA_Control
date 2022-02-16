@@ -40,7 +40,7 @@ class VehicleState(object):
         VehicleState.velocidad_real = 0.
         VehicleState.direccion_real = 0.
         VehicleState.freno_real = 0.
-        VehicleState.marcha_real = 'N'
+        VehicleState.marcha_real = ''
 
         # Estado del sistema
         VehicleState.b_acelerador = False
@@ -56,7 +56,7 @@ class VehicleState(object):
         VehicleState.parada_emergencia_request = False
 
         VehicleState.status_steering = False
-        VehicleState.status_brake = False
+        VehicleState.status_brake = None
 
 
 if __name__ == '__main__':

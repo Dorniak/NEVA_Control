@@ -80,11 +80,13 @@ class NEVA_GUI(Node):
 
     def publish_Control(self):
         self.pub_b_volante.publish(Bool(data=self.window.SystemWindow.SystemNevaWindow.checkbox_Volante.isChecked()))
-        self.pub_b_velocidad.publish(Bool(data=self.window.SystemWindow.SystemNevaWindow.checkbox_Velocidad.isChecked()))
+        self.pub_b_velocidad.publish(
+            Bool(data=self.window.SystemWindow.SystemNevaWindow.checkbox_Velocidad.isChecked()))
         # volante = interp(self.window.LateralSlider.value(), (-100, 100), (self.brake_range[0], self.brake_range[1]))
         # self.pub_volante.publish(Float64(data=float(volante)))
         self.pub_volante.publish(Float64(data=float(self.window.SystemWindow.SystemNevaWindow.VolanteSlider.value())))
-        self.pub_velocidad.publish(Float64(data=float(self.window.SystemWindow.SystemNevaWindow.VelocidadSlider.value())))
+        self.pub_velocidad.publish(
+            Float64(data=float(self.window.SystemWindow.SystemNevaWindow.VelocidadSlider.value())))
 
     def subscriber_status(self, msg):
         self.window.SystemWindow.SystemVerifValuesWindow.Velocidad_label_no.setText(str(round(msg.velocidad_real, 1)))
@@ -94,8 +96,6 @@ class NEVA_GUI(Node):
         # self.window.direccion_real_2.setText(str(round(msg.volante_real, 1)))
 
         self.window.SystemWindow.SystemVerifValuesWindow.freno_label_no.setText(str(round(msg.freno_real)) + ' %')
-
-        self.window.SystemWindow.SystemVerifValuesWindow.marcha_label_no.setText(str(msg.marcha_real))
 
         # self.window.velocidad_target.setText(str(round(msg.velocidad_target, 1)))
 
@@ -107,9 +107,13 @@ class NEVA_GUI(Node):
 
         # self.window.parada_target.setText('TRUE' if msg.parada_emergencia_request else 'FALSE')
 
-        self.window.SystemWindow.SystemVerifValuesWindow.p_emergencia_label_no.setText('TRUE' if msg.parada_emergencia else 'FALSE')
-
-        self.signals.CAN_status_signal.emit(msg.can_connected)
+        self.window.SystemWindow.SystemVerifValuesWindow.p_emergencia_label_no.setText(
+            'TRUE' if msg.parada_emergencia else 'FALSE')
+        if str(msg.marcha_real) != '':
+            self.window.SystemWindow.SystemVerifValuesWindow.marcha_label_no.setText(str(msg.marcha_real))
+            self.signals.CAN_status_signal.emit(True)
+        else:
+            self.signals.CAN_status_signal.emit(False)
         self.signals.brake_status_signal.emit(msg.brake_enabled)
 
 
