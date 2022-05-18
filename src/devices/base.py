@@ -56,7 +56,7 @@ class VehicleState(object):
         VehicleState.parada_emergencia_request = False
 
         VehicleState.status_steering = False
-        VehicleState.status_brake = None
+        VehicleState.status_brake = False
 
 
 if __name__ == '__main__':

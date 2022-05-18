@@ -114,7 +114,7 @@ class NEVA_GUI(Node):
             self.signals.CAN_status_signal.emit(True)
         else:
             self.signals.CAN_status_signal.emit(False)
-        self.signals.brake_status_signal.emit(msg.brake_enabled)
+        self.signals.brake_status_signal.emit(msg.brake_connected)
 
 
 def startthread(node):
