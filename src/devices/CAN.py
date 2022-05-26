@@ -80,6 +80,8 @@ dict_decoder = {  # 0x581: deco_581,
     0x1CB: deco_1CB,
     0x176: deco_176,
     0x421: deco_421,
+    0x581: deco_581,
+    0x582: deco_582,
 }
 
 
